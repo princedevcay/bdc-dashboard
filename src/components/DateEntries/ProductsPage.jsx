@@ -18,6 +18,15 @@ import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 // Mock initial data
 const initialProducts = [
   { id: 1, name: 'PREMIUM' },
+  { id: 1, name: 'PREMIUM' },
+  { id: 1, name: 'PREMIUM' },
+  { id: 1, name: 'PREMIUM' },
+  { id: 1, name: 'PREMIUM' },
+  { id: 1, name: 'PREMIUM' },
+  { id: 1, name: 'PREMIUM' },
+  { id: 1, name: 'PREMIUM' },
+  { id: 1, name: 'PREMIUM' },
+  { id: 1, name: 'PREMIUM' },
   // ... other products
 ];
 

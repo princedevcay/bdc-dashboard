@@ -18,7 +18,7 @@ import {
   ColorModeScript,
   HStack
 } from '@chakra-ui/react';
-import { FiMenu, FiHome, FiSettings, FiChevronDown, FiChevronUp, FiMoon, FiSun } from 'react-icons/fi';
+import { FiMenu, FiHome, FiSettings, FiChevronDown, FiChevronUp, FiMoon, FiSun, FiFileText } from 'react-icons/fi';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import ProductsPage from './components/DateEntries/ProductsPage';
@@ -61,6 +61,8 @@ function App() {
                         <Link to="/data-entry/bdc-companies"><Button variant="ghost">BDC Companies</Button></Link>
                       </VStack>
                     </Collapse>
+                    <Link to="/reports"><Button leftIcon={<FiFileText />} variant="ghost">Reports</Button> </Link>
+                    <Link to="/settings"><Button leftIcon={<FiSettings />} variant="ghost">Settings</Button> </Link>
                   </VStack>
                 </DrawerBody>
               </DrawerContent>
@@ -91,6 +93,8 @@ function App() {
                     <Link to="/data-entry/bdc-companies"><Button variant="ghost">BDC Companies</Button></Link>
                   </VStack>
                 </Collapse>
+                <Link to="/reports"><Button leftIcon={<FiFileText />} variant="ghost">Reports</Button> </Link>
+                <Link to="/settings"><Button leftIcon={<FiSettings />} variant="ghost">Settings</Button> </Link>
               </VStack>
 
               <Box flex="1" p={4}>
