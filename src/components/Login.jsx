@@ -44,7 +44,7 @@ const Login = () => {
   };
 
   return (
-    <Flex align="center" justify="center" height="90vh" overflow="hidden" bg={useColorModeValue('gray.50', 'gray.800')}>
+    <Flex align="center" justify="center" minHeight="100vh" overflow="hidden" bg={useColorModeValue('gray.50', 'gray.800')}>
       <Box as="form" onSubmit={handleLogin} p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" bg={useColorModeValue('white', 'gray.700')}>
         <VStack spacing={4} align="flex-start" w="full">
           <Heading as="h2" size="lg">Login</Heading>

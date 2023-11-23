@@ -1,11 +1,12 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import {
-  ChakraProvider,
+  ChakraProvider, VStack
 } from '@chakra-ui/react';
 import MainLayout from './components/MainLayout';
 import LandingPage from './pages/LandingPage';
 import Login from './components/Login';
+import Footer from './components/Footer';
 // ... other imports ...
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Route path="/login" element={<Login/>}/>
         </Routes>
       </Router>
+        <Footer /> 
     </ChakraProvider>
   );
 }

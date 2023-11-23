@@ -17,7 +17,7 @@ const LandingPage = () => {
 
   return (
     <Flex
-      height="100vh"
+    minHeight="100vh"
       alignItems="center"
       justifyContent="center"
       p={5}
