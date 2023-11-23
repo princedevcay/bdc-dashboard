@@ -48,7 +48,7 @@ function App() {
             <Drawer placement={placement} onClose={onClose} isOpen={isOpen}>
               <DrawerOverlay />
               <DrawerContent>
-                <DrawerHeader borderBottomWidth="1px">BDC Dashboard</DrawerHeader>
+                <DrawerHeader borderBottomWidth="1px">BDC Inventory Management</DrawerHeader>
                 <DrawerBody>
                   <VStack align="flex-start">
                     <Link to="/"><Button variant="ghost">Dashboard</Button></Link>
@@ -67,7 +67,7 @@ function App() {
             </Drawer>
 
             <Flex justifyContent="space-between" alignItems="center" p={3} display={{ base: 'none', md: 'flex' }}>
-              <Heading as="h1">BDC Dashboard</Heading>
+              <Heading as="h1">BDC Inventory Management</Heading>
               <HStack>
                 <IconButton
                   aria-label="Toggle Dark Mode"
