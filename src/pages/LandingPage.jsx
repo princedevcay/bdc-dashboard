@@ -1,40 +1,67 @@
-import Slider from 'react-slick';
-import { Box, Button, Flex, Heading, VStack } from '@chakra-ui/react';
-
-const slideImages = [
-  // URLs or paths to your background images
-  '1.jpg',
-  '2.jpg',
-  // more images
-];
+import React from 'react';
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  Button,
+  VStack,
+  HStack,
+  Image,
+  useColorModeValue,
+} from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    fade: true,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    cssEase: 'linear'
-  };
+  const formBackground = useColorModeValue("gray.100", "gray.700");
 
   return (
-    <Flex align="center" justify="center" height="100vh">
-      <Slider {...settings}>
-        {slideImages.map((img, index) => (
-          <Box key={index} height="100vh" bgImage={img} bgSize="cover" bgPosition="center">
-            {/* Add any overlay or content here */}
-          </Box>
-        ))}
-      </Slider>
-      <VStack position="absolute" spacing={4}>
-        <Heading color="black">Your Application Name</Heading>
-        <Button colorScheme="blue">Login</Button>
-        <Button colorScheme="green">Register</Button>
-      </VStack>
+    <Flex
+      height="100vh"
+      alignItems="center"
+      justifyContent="center"
+      p={5}
+      bgGradient="linear(to-r, teal.300, green.200)"
+    >
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        width="full"
+        maxW="1200px"
+        height={"500px"}
+        bg={formBackground}
+        p={8}
+        borderRadius="lg"
+        boxShadow="lg"
+        textAlign="center"
+      >
+        <VStack
+          flex={1}
+          spacing={4}
+          alignItems="flex-start"
+          justifyContent="center"
+          p={5}
+        >
+          <Heading as="h1" size="xl">BDC Inventory Management</Heading>
+          <Text fontSize="xl">Welcome to Our Inventory Management System</Text>
+          <HStack spacing={4}>
+          <Link to="/login">
+          <Button colorScheme="blue">Login</Button>
+        </Link>
+        <Link to="/register">
+          <Button colorScheme="green">Register</Button>
+        </Link>
+          </HStack>
+        </VStack>
+        <Box flex={1} p={5}>
+          <Image 
+            src="startimage.png" // Replace with your image path
+            borderRadius="lg"
+            objectFit="cover"
+            width="100%"
+            height="100%"
+          />
+        </Box>
+      </Flex>
     </Flex>
   );
 };

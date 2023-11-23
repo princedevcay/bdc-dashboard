@@ -1,4 +1,3 @@
-import React from 'react';
 import { useLocation, Routes, Route, Link } from 'react-router-dom';
 import {
   Box,
@@ -23,6 +22,7 @@ import Dashboard from './Dashboard';
 import ProductsPage from './DateEntries/ProductsPage';
 import BDCCompanies from './DateEntries/BDCCompanies';
 
+
 const MainLayout = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
@@ -43,17 +43,21 @@ const MainLayout = () => {
       {showSidebar && (
         <>
           {/* Mobile Drawer */}
-          <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="full">
+          <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="full" >
             <DrawerOverlay />
-            <DrawerContent>
+            <DrawerContent maxWidth="55%"  bg="#008080">
               <DrawerCloseButton />
-              <DrawerHeader borderBottomWidth="1px">Menu</DrawerHeader>
+              <DrawerHeader borderBottomWidth="1px" color={"white"}>BDC Inventory Management</DrawerHeader>
               <DrawerBody>
                 <VStack align="stretch" spacing={4}>
                   {sidebarContent.map((item, index) => (
                     <Link key={index} to={item.path}>
-                      <Button w="100%" variant="ghost" justifyContent="flex-start" leftIcon={<Icon as={item.icon} />} onClick={onClose}>
-                        {item.name}
+                      <Button w="100%" variant="ghost" 
+                      color={"white"} justifyContent="flex-start" 
+                      leftIcon={<Icon as={item.icon} />} 
+                      onClick={onClose}
+                      _hover={{ bg: 'gray.100', color: 'teal.500' }}>
+                        {item.name} 
                       </Button>
                     </Link>
                   ))}
@@ -63,13 +67,25 @@ const MainLayout = () => {
           </Drawer>
 
           {/* Desktop Sidebar */}
-          <Box width={{ md: '250px' }} bg="white" p={4} boxShadow="md">
-            <Heading size="lg" mb={6} pl={3}>BDC Inventory Management</Heading>
+          <Box
+              display={{ base: 'none', md: 'block' }} // Adjusted to hide on mobile
+              width={{ md: '250px' }}
+              bg="#008080"
+              p={4}
+              boxShadow="md"
+            >
+            <Heading size="lg" mb={6} pl={3} color={"white"} >BDC Inventory Management</Heading>
             <Divider />
-            <VStack mt={6} align="stretch" spacing={4}>
+            <VStack mt={6} align="stretch" spacing={4} >
               {sidebarContent.map((item, index) => (
                 <Link key={index} to={item.path}>
-                  <Button variant="ghost" justifyContent="flex-start" leftIcon={<Icon as={item.icon} />} pl={3}>
+                  <Button 
+                  variant="ghost" 
+                  color={"white"} justifyContent="flex-start" 
+                  leftIcon={<Icon 
+                  as={item.icon} />} 
+                  pl={3}
+                  _hover={{ bg: 'gray.100', color: 'teal.500', width: '100%' }}>
                     <Text>{item.name}</Text>
                   </Button>
                 </Link>
@@ -86,9 +102,10 @@ const MainLayout = () => {
             aria-label="Open Menu"
             icon={<FiMenu />}
             onClick={onOpen}
+           
             size="lg"
             m={2}
-            display={{ base: 'flex', md: 'none' }}
+            display={{ base: 'flex', md: 'none' }} // Only show on mobile
           />
         )}
 
