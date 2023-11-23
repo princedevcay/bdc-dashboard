@@ -1,12 +1,11 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import {
-  ChakraProvider, VStack
+  ChakraProvider,
 } from '@chakra-ui/react';
 import MainLayout from './components/MainLayout';
 import LandingPage from './pages/LandingPage';
 import Login from './components/Login';
-import Footer from './components/Footer';
 // ... other imports ...
 
 function App() {
@@ -19,10 +18,6 @@ function App() {
           <Route path="/login" element={<Login/>}/>
         </Routes>
       </Router>
-      <VStack spacing={8} minHeight="100vh" justifyContent="space-between">
-       
-        <Footer />
-      </VStack>
     </ChakraProvider>
   );
 }
