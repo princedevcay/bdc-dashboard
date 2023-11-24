@@ -13,7 +13,8 @@ import {
   InputRightElement,
   Link,
   Text,
-  useToast
+  useToast,
+  Image
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
@@ -106,10 +107,13 @@ const Register = () => {
   };
 
   return (
-    <Flex align="center" justify="center" minHeight="100vh" bg={useColorModeValue('gray.50', 'gray.800')}>
-      <Box as="form" onSubmit={handleRegister} p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" bg={useColorModeValue('white', 'gray.700')}>
+    <Flex align="center" justify="center" minHeight="120vh" bg={useColorModeValue('gray.50', 'gray.800')}>
+      <Box as="form" onSubmit={handleRegister} p={8} maxWidth="600px" borderWidth={1} borderRadius={8} boxShadow="lg"  bg={useColorModeValue('white', 'gray.700')}>
         <VStack spacing={4} align="flex-start" w="full">
-          <Heading as="h2" size="lg">Register</Heading>
+        <Flex width="full" justify="center"> {/* Center the image */}
+            <Image src="/logo.png" alt="TOR Logo" boxSize="100px" objectFit="contain" />
+          </Flex>
+          <Heading as="h2" size="lg">Monitoring & Control Dept.</Heading>
           <FormControl id="username" isInvalid={errors.username} isRequired>
             <FormLabel>Username</FormLabel>
             <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
@@ -142,7 +146,7 @@ const Register = () => {
               {errors.confirmPassword}
             </Text>}
           </FormControl>
-          <Button width="full" mt={4} colorScheme="teal" type="submit">
+          <Button width="full" mt={4} colorScheme="blue" type="submit">
             Register
           </Button>
           <Link color="teal.500" href="/login" fontSize="sm">Already have an account? Login</Link>

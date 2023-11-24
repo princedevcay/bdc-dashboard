@@ -7,6 +7,7 @@ import WarehouseCapacityUtilization from './WarehouseCapacityUtilization';
 import StockLevelTrendGraph from './dashboard/StockLevelTrendGraph';
 import StockPositionWidget from './dashboard/StockPositionWidget';
 import StockSummaryWidget from './dashboard/StockSummaryWidget';
+import LoadingRackLiftings from './dashboard/LoadinRackLiftings';
 
 
 const Dashboard = () => {
@@ -20,6 +21,7 @@ const Dashboard = () => {
       <StockSummaryWidget/>
       <StockLevelWidget />
       <StockTurnoverRateComponent/>
+      <LoadingRackLiftings/>
       {/* Add other wid
       gets here */}
     </SimpleGrid>

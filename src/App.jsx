@@ -1,12 +1,11 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import {
-  ChakraProvider
+  ChakraProvider, VStack
 } from '@chakra-ui/react';
 import MainLayout from './components/MainLayout';
-import LandingPage from './pages/LandingPage';
 import Login from './components/Login';
-import Register from './components/Register';
+import Register from './components/Register'
 import Footer from './components/Footer';
 // ... other imports ...
 
@@ -15,10 +14,12 @@ function App() {
     <ChakraProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<Login/>} />
           <Route path="*" element={<MainLayout />} />
           <Route path="/login" element={<Login/>}/>
-          <Route path='/register' element={<Register/>}/>
+          <Route path="/register" element={<Register/>}/>
+          
+
         </Routes>
       </Router>
         <Footer /> 

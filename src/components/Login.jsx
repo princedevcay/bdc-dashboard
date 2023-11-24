@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Flex,
@@ -11,15 +11,16 @@ import {
   VStack,
   InputGroup,
   InputRightElement,
-  Link,
   Text,
-  useToast
+  useToast,
+  Link, 
+  Image
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -30,11 +31,8 @@ const Login = () => {
     let valid = true;
     let errors = {};
 
-    if (!email) {
-      errors.email = 'Email is required';
-      valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = 'Email address is invalid';
+    if (!username) {
+      errors.username = 'Username is required';
       valid = false;
     }
     if (!password) {
@@ -61,7 +59,7 @@ const Login = () => {
 
     try {
       // Replace with your login logic
-      console.log('Email:', email, 'Password:', password);
+      console.log('Username:', username, 'Password:', password);
       navigate('/dashboard'); // Redirect to dashboard or another route
     } catch (error) {
       // Handle errors
@@ -77,13 +75,16 @@ const Login = () => {
 
   return (
     <Flex align="center" justify="center" minHeight="100vh" bg={useColorModeValue('gray.50', 'gray.800')}>
-      <Box as="form" onSubmit={handleLogin} p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" bg={useColorModeValue('white', 'gray.700')}>
+      <Box as="form" onSubmit={handleLogin} p={8} maxWidth="6y00px" borderWidth={1} borderRadius={8} boxShadow="lg" bg={useColorModeValue('white', 'gray.700')}>
         <VStack spacing={4} align="flex-start" w="full">
-          <Heading as="h2" size="lg">Login</Heading>
-          <FormControl id="email" isInvalid={errors.email} isRequired>
-            <FormLabel>Email address</FormLabel>
-            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            {errors.email && <Text color="red.500" fontSize="sm">{errors.email}</Text>}
+        <Flex width="full" justify="center"> {/* Center the image */}
+            <Image src="/logo.png" alt="TOR Logo" boxSize="100px" objectFit="contain" />
+          </Flex>
+          <Heading as="h2" size="lg">Monitoring & Control Dept.</Heading>
+          <FormControl id="username" isInvalid={errors.username} isRequired>
+            <FormLabel>Username</FormLabel>
+            <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+            {errors.username && <Text color="red.500" fontSize="sm">{errors.username}</Text>}
           </FormControl>
           <FormControl id="password" isInvalid={errors.password} isRequired>
             <FormLabel>Password</FormLabel>
@@ -97,10 +98,13 @@ const Login = () => {
             </InputGroup>
             {errors.password && <Text color="red.500" fontSize="sm">{errors.password}</Text>}
           </FormControl>
-          <Button width="full" mt={4} colorScheme="teal" type="submit">
+          <Button width="full" mt={4} colorScheme="blue" type="submit">
             Login
           </Button>
-          <Link color="teal.500" href="/forgot-password" fontSize="sm">Forgot password?</Link>
+          <Flex justifyContent="space-between" width="full" mt={4}>
+            <Link color="teal.500" href="/forgot-password" fontSize="sm">Forgot password?</Link>
+            <Link color="teal.500" href="/register" fontSize="sm">Register</Link>
+          </Flex>
         </VStack>
       </Box>
     </Flex>
