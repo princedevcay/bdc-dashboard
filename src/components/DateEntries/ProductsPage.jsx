@@ -98,7 +98,7 @@ const ProductsPage = () => {
   };
 
   return (
-    <Box p={4}>
+    <Box p={4} mb={10}>
       <Flex gap={2} mb={4} alignItems="center">
         {/* Search Functionality */}
         <InputGroup size="md">

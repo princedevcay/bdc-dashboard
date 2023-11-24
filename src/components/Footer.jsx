@@ -13,6 +13,7 @@ const Footer = () => {
       color={textColor}
       py={4}
       className="footer"
+
     >
       <Container
         maxWidth="container.xl"
