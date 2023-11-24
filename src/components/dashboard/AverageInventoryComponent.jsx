@@ -1,12 +1,28 @@
-import { Box, Heading, Text } from '@chakra-ui/react';
+import React from 'react';
+import { Box, Text, Stat, StatLabel, StatNumber } from '@chakra-ui/react';
 
 const AverageInventoryComponent = () => {
-  const averageInventory = "3,500L";
+  // Sample data, replace with actual data fetching logic
+  const inventoryData = [
+    { productName: "Diesel", stock: [1200, 1150, 1100] },
+    { productName: "Petrol", stock: [1500, 1450, 1400] },
+    // Add more products as needed
+  ];
+
+  const calculateAverage = (stocks) => {
+    const total = stocks.reduce((acc, stock) => acc + stock, 0);
+    return total / stocks.length;
+  };
 
   return (
-    <Box border="1px" borderColor="gray.200" p={4} borderRadius="md">
-      <Heading size="md">Average Inventory</Heading>
-      <Text fontSize="xl">{averageInventory}</Text>
+    <Box p={5} shadow="md" borderWidth="1px">
+      <Text fontSize="xl">Average Inventory</Text>
+      {inventoryData.map((product, index) => (
+        <Stat key={index} mt={3}>
+          <StatLabel>{product.productName}</StatLabel>
+          <StatNumber>{calculateAverage(product.stock).toFixed(2)} Litres</StatNumber>
+        </Stat>
+      ))}
     </Box>
   );
 };

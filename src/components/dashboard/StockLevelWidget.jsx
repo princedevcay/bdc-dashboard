@@ -8,7 +8,7 @@ const StockLevelWidget = () => {
   ];
 
   return (
-    <Box border="1px" borderColor="gray.200" p={4} borderRadius="md">
+    <Box p={5} shadow="md" borderWidth="1px">
       <Heading size="md">Current Stock Levels</Heading>
       <VStack align="stretch">
         {stockData.map((item, index) => (

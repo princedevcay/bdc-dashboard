@@ -16,11 +16,17 @@ import {
   Text,
   Icon,
   Divider,
+  Avatar,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react';
-import { FiMenu, FiHome, FiClipboard, FiUsers, FiSettings } from 'react-icons/fi';
+import { FiMenu, FiHome, FiClipboard, FiUsers, FiSettings, FiBell, FiUser, FiLogOut } from 'react-icons/fi';
 import Dashboard from './Dashboard';
 import ProductsPage from './DateEntries/ProductsPage';
 import BDCCompanies from './DateEntries/BDCCompanies';
+import AlertsWidget from './dashboard/AlertsWidget';
 
 
 const MainLayout = () => {
@@ -95,22 +101,43 @@ const MainLayout = () => {
         </>
       )}
 
-      <Box flex="1" p={4}>
-        {/* Hamburger icon for mobile */}
-        {showSidebar && (
-          <IconButton
-            aria-label="Open Menu"
-            icon={<FiMenu />}
-            onClick={onOpen}
-           
-            size="lg"
-            m={2}
-            display={{ base: 'flex', md: 'none' }} // Only show on mobile
-          />
-        )}
+<Box flex="1" p={4}>
+        <Flex justify="space-between" align="center" mb={4}>
+          {/* Hamburger icon for mobile */}
+          {showSidebar && (
+            <IconButton
+              aria-label="Open Menu"
+              icon={<FiMenu />}
+              onClick={onOpen}
+              size="lg"
+              m={2}
+              display={{ base: 'flex', md: 'none' }} // Only show on mobile
+            />
+          )}
+
+          {/* Spacer to push Alerts Widget to the right */}
+          <Box flex="1" />
+
+          {/* AlertsWidget on the right */}
+          <AlertsWidget  />
+          {/* Profile Avatar with Dropdown */}
+          <Menu>
+            <MenuButton as={Button} colorScheme="teal" rounded="full" variant="link" cursor="pointer" minW={0} ml={5}>
+              <Avatar size="sm" name="User Name" src="/path/to/profile/image.jpg" />
+            </MenuButton>
+            <MenuList>
+              <MenuItem icon={<FiUser />}>My Profile</MenuItem>
+              <MenuItem icon={<FiSettings />}>Settings</MenuItem>
+              {/* Other menu items */}
+              <MenuItem icon={<FiLogOut />}>Logout</MenuItem>
+            </MenuList>
+          </Menu>
+
+        </Flex>
+
 
         {/* Main Content */}
-        <Box as="main" p={4}>
+        <Box as="main" p={4} >
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/data-entry/products" element={<ProductsPage />} />

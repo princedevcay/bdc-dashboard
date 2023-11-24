@@ -1,4 +1,17 @@
-import { Box, Heading, List, ListItem, Alert, AlertIcon } from '@chakra-ui/react';
+import React from 'react';
+import {
+  Box,
+  Heading,
+  List,
+  ListItem,
+  Alert,
+  AlertIcon,
+  Menu,
+  MenuButton,
+  MenuList,
+  IconButton,
+} from '@chakra-ui/react';
+import { FiBell } from 'react-icons/fi';
 
 const AlertsWidget = () => {
   const alerts = [
@@ -8,19 +21,28 @@ const AlertsWidget = () => {
   ];
 
   return (
-    <Box border="1px" borderColor="gray.200" p={4} borderRadius="md">
-      <Heading size="md">Alerts</Heading>
-      <List spacing={3}>
-        {alerts.map((alert, index) => (
-          <ListItem key={index}>
-            <Alert status="warning">
-              <AlertIcon />
-              {alert}
-            </Alert>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
+    <Menu>
+      <MenuButton
+        as={IconButton}
+        aria-label="Notifications"
+        icon={<FiBell />}
+        variant="outline"
+        size="md"
+      />
+      <MenuList p={2} maxH="300px" overflowY="auto">
+        <Heading size="md" mx={4} my={2}>Alerts</Heading>
+        <List spacing={2}>
+          {alerts.map((alert, index) => (
+            <ListItem key={index}>
+              <Alert status="warning">
+                <AlertIcon />
+                {alert}
+              </Alert>
+            </ListItem>
+          ))}
+        </List>
+      </MenuList>
+    </Menu>
   );
 };
 

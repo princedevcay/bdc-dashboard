@@ -1,24 +1,38 @@
-import { Box, Heading, List, ListItem, Icon } from '@chakra-ui/react';
-import { FiArrowUpRight, FiArrowDownRight } from 'react-icons/fi';
+import React from 'react';
+import { Box, Table, Thead, Tbody, Tr, Th, Td, Text } from '@chakra-ui/react';
 
 const RecentTransactionsWidget = () => {
-  const transactions = [
-    { type: "Lifting", amount: "2,000L", icon: FiArrowUpRight },
-    { type: "Transfer In", amount: "1,500L", icon: FiArrowDownRight },
+  // Sample data, replace with actual data fetching logic
+  const transactionData = [
+    { date: "2023-10-01", productName: "Diesel", type: "Lifting", quantity: 200 },
+    { date: "2023-10-02", productName: "Petrol", type: "Transfer In", quantity: 300 },
+    { date: "2023-10-03", productName: "Kerosene", type: "Transfer Out", quantity: 150 },
     // Add more transactions as needed
   ];
 
   return (
-    <Box border="1px" borderColor="gray.200" p={4} borderRadius="md">
-      <Heading size="md">Recent Transactions</Heading>
-      <List spacing={3}>
-        {transactions.map((transaction, index) => (
-          <ListItem key={index} display="flex" alignItems="center">
-            <Icon as={transaction.icon} mr={2} />
-            {`${transaction.type}: ${transaction.amount}`}
-          </ListItem>
-        ))}
-      </List>
+    <Box p={5} shadow="md" borderWidth="1px">
+      <Text fontSize="xl">Recent Transactions</Text>
+      <Table variant="simple">
+        <Thead>
+          <Tr>
+            <Th>Date</Th>
+            <Th>Product</Th>
+            <Th>Type</Th>
+            <Th isNumeric>Quantity</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {transactionData.map((transaction, index) => (
+            <Tr key={index}>
+              <Td>{transaction.date}</Td>
+              <Td>{transaction.productName}</Td>
+              <Td>{transaction.type}</Td>
+              <Td isNumeric>{transaction.quantity} Litres</Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
     </Box>
   );
 };

@@ -14,7 +14,7 @@ const StockSummaryWidget = () => {
   ];
 
   return (
-    <Box border="1px" borderColor="gray.200" p={4} borderRadius="md">
+    <Box p={5} shadow="md" borderWidth="1px">
       <Heading size="md" mb={4}>Stock Summary</Heading>
       <Table variant="simple">
         <Thead>

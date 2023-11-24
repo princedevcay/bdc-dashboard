@@ -21,22 +21,10 @@ const StockPositionComponent = () => {
       "Opening Balance": "-", // Placeholder for non-provided data
       "Stock Position": "7,072",
     },
-    "RFO": {
-      "Opening Balance": "-", // Placeholder for non-provided data
-      "Stock Position": "-",
-    },
-    "PREMIX": {
-      "Opening Balance": "101,003",
-      "Stock Position": "9,624",
-    },
-    "LPG": {
-      "Opening Balance": "91,240",
-      "Stock Position": "8,694",
-    }
   };
 
   return (
-    <Box border="1px" borderColor="gray.200" p={4}>
+    <Box p={5} shadow="md" borderWidth="1px">
       <Text fontSize="xl" fontWeight="bold" mb={4}>NENSER PETRO - Stock Position</Text>
       <HStack wrap="wrap" spacing={4} justify="space-between">
         {Object.entries(stockPositionData).map(([product, values], idx) => (
