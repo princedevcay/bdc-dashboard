@@ -11,7 +11,7 @@ import StockSummaryWidget from './dashboard/StockSummaryWidget';
 
 const Dashboard = () => {
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={5} p={5}>
+    <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={5} p={5} mb={10}>
        <AlertsWidget/>
        <StockSummaryWidget/>
       <StockPositionWidget/>
