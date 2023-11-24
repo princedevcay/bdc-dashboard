@@ -64,9 +64,9 @@ const Login = () => {
             </InputGroup>
           </FormControl>
           <Checkbox defaultIsChecked>Remember me</Checkbox>
-          <Button width="full" mt={4} colorScheme="teal" type="submit" isLoading={isLoading} loadingText="Logging in">
+          <Link color="teal.500" href="/dashbord" mr={4}><Button width="full" mt={4} colorScheme="teal" type="submit" isLoading={isLoading} loadingText="Logging in">
             Login
-          </Button>
+          </Button></Link>
           {isLoading && <Spinner />}
           <Flex justify="space-between" width="full" alignItems="center">
             <Text fontSize="sm">Don't have an account? 
