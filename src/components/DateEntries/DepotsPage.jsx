@@ -6,41 +6,32 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon, EditIcon, ArrowUpIcon, ArrowDownIcon, SearchIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
 
-// Replace this with actual BDC companies from your document
-const initialBDCCompanies = [
-  { id: 1, name: 'ALFAPETRO' },
-  { id: 2, name: 'ASTRA' },
-  { id: 3, name: 'BATTOP' },
-  { id: 4, name: 'BLUE OCEAN' },
-  { id: 5, name: 'BOST (G4O)' },
-  { id: 6, name: 'BOST - OLD' },
-  { id: 7, name: 'CHASE' },
-  { id: 8, name: 'CIRRUS' },
-  { id: 9, name: 'DEEN PETRO' },
-  { id: 10, name: 'DOME' },
-  { id: 11, name: 'DOMINION' },
-  // ... add more BDC companies as necessary ...
+const initialDepots = [
+  { id: 1, name: 'Depot 1' },
+  { id: 2, name: 'Depot 2' },
+  { id: 3, name: 'Depot 3' },
+  // ... other initial depots ...
 ];
 
-const BDCCompanies = () => {
-  const [BDCCompanies, setBDCCompanies] = useState(initialBDCCompanies);
-  const [newBDCCompanyName, setNewBDCCompanyName] = useState('');
+const DepotsPage = () => {
+  const [depots, setDepots] = useState(initialDepots);
+  const [newDepotName, setNewDepotName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [editingBDCCompanyId, setEditingBDCCompanyId] = useState(null);
+  const [editingDepotId, setEditingDepotId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
   const toast = useToast();
   const cancelRef = useRef();
 
-  const addBDCCompany = () => {
-    if (newBDCCompanyName) {
-      const newCompany = { id: BDCCompanies.length + 1, name: newBDCCompanyName };
-      setBDCCompanies([...BDCCompanies, newCompany]);
-      setNewBDCCompanyName('');
+  const addDepot = () => {
+    if (newDepotName) {
+      const newDepot = { id: depots.length + 1, name: newDepotName };
+      setDepots([...depots, newDepot]);
+      setNewDepotName('');
       toast({
-        title: 'Company added.',
-        description: "We've added the BDC company for you.",
+        title: 'Depot added.',
+        description: "We've added the depot for you.",
         status: 'success',
         duration: 2000,
         isClosable: true,
@@ -48,27 +39,27 @@ const BDCCompanies = () => {
     }
   };
 
-  const startEditBDCCompany = (companyId) => {
-    const company = BDCCompanies.find(c => c.id === companyId);
-    setNewBDCCompanyName(company.name);
-    setEditingBDCCompanyId(companyId);
+  const startEditDepot = (depotId) => {
+    const depot = depots.find(d => d.id === depotId);
+    setNewDepotName(depot.name);
+    setEditingDepotId(depotId);
     setIsEditing(true);
   };
 
-  const editBDCCompany = () => {
-    if (newBDCCompanyName && editingBDCCompanyId) {
-      setBDCCompanies(BDCCompanies.map(company => {
-        if (company.id === editingBDCCompanyId) {
-          return { ...company, name: newBDCCompanyName };
+  const editDepot = () => {
+    if (newDepotName && editingDepotId) {
+      setDepots(depots.map(depot => {
+        if (depot.id === editingDepotId) {
+          return { ...depot, name: newDepotName };
         }
-        return company;
+        return depot;
       }));
-      setNewBDCCompanyName('');
+      setNewDepotName('');
       setIsEditing(false);
-      setEditingBDCCompanyId(null);
+      setEditingDepotId(null);
       toast({
-        title: 'Company updated.',
-        description: "We've updated the BDC company for you.",
+        title: 'Depot updated.',
+        description: "We've updated the depot for you.",
         status: 'success',
         duration: 2000,
         isClosable: true,
@@ -76,19 +67,19 @@ const BDCCompanies = () => {
     }
   };
 
-  const deleteBDCCompany = (companyId) => {
-    setBDCCompanies(BDCCompanies.filter((company) => company.id !== companyId));
+  const deleteDepot = (depotId) => {
+    setDepots(depots.filter((depot) => depot.id !== depotId));
     toast({
-      title: 'Company deleted.',
-      description: "We've deleted the BDC company for you.",
+      title: 'Depot deleted.',
+      description: "We've deleted the depot for you.",
       status: 'info',
       duration: 2000,
       isClosable: true,
     });
   };
 
-  const onOpenDeleteDialog = (companyId) => {
-    setEditingBDCCompanyId(companyId);
+  const onOpenDeleteDialog = (depotId) => {
+    setEditingDepotId(depotId);
     setIsDeleteDialogOpen(true);
   };
 
@@ -96,58 +87,61 @@ const BDCCompanies = () => {
     setIsDeleteDialogOpen(false);
   };
 
-  const confirmDeleteBDCCompany = () => {
-    deleteBDCCompany(editingBDCCompanyId);
+  const confirmDeleteDepot = () => {
+    deleteDepot(editingDepotId);
     onCloseDeleteDialog();
   };
 
-  const filteredBDCCompanies = searchQuery
-    ? BDCCompanies.filter(company => company.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : BDCCompanies.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage);
+  const filteredDepots = searchQuery
+    ? depots.filter(depot => depot.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    : depots.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage);
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const totalPages = Math.ceil(BDCCompanies.length / recordsPerPage);
+  const totalPages = Math.ceil(depots.length / recordsPerPage);
 
   return (
     <Box p={4} mb={10}>
       <Flex gap={2} mb={4} alignItems="center">
+        {/* Search Functionality */}
         <InputGroup size="md">
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search company"
+            placeholder="Search depots"
             pr="4.5rem"
           />
           <InputRightElement width="4.5rem">
             <IconButton
-              aria-label="Search company"
+              aria-label="Search depots"
               icon={<SearchIcon />}
               h="1.75rem" size="sm"
             />
           </InputRightElement>
         </InputGroup>
-
+  
+        {/* Add/Edit Depot */}
         <InputGroup size="md">
           <Input
-            value={newBDCCompanyName}
-            onChange={(e) => setNewBDCCompanyName(e.target.value)}
-            placeholder={isEditing ? "Edit company name" : "New company name"}
+            value={newDepotName}
+            onChange={(e) => setNewDepotName(e.target.value)}
+            placeholder={isEditing ? "Edit depot name" : "New depot name"}
             pr="4.5rem"
           />
           <InputRightElement width="4.5rem">
-            <Tooltip label={isEditing ? "Confirm Edit" : "Add Company"}>
+            <Tooltip label={isEditing ? "Confirm Edit" : "Add Depot"}>
               <IconButton
-                aria-label={isEditing ? "Confirm edit" : "Add company"}
+                aria-label={isEditing ? "Confirm edit" : "Add depot"}
                 icon={isEditing ? <EditIcon /> : <AddIcon />}
                 h="1.75rem" size="sm"
-                onClick={isEditing ? editBDCCompany : addBDCCompany}
+                onClick={isEditing ? editDepot : addDepot}
               />
             </Tooltip>
           </InputRightElement>
         </InputGroup>
       </Flex>
-
+  
+      {/* Depots Table */}
       <Table variant="simple">
         <Thead>
           <Tr>
@@ -157,19 +151,20 @@ const BDCCompanies = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {filteredBDCCompanies.map((company) => (
-            <Tr key={company.id}>
-              <Td>{company.id}</Td>
-              <Td>{company.name}</Td>
+          {filteredDepots.map((depot) => (
+            <Tr key={depot.id}>
+              <Td>{depot.id}</Td>
+              <Td>{depot.name}</Td>
               <Td>
-                <IconButton aria-label="Edit company" icon={<EditIcon />} onClick={() => startEditBDCCompany(company.id)} />
-                <IconButton aria-label="Delete company" icon={<DeleteIcon />} onClick={() => onOpenDeleteDialog(company.id)} ml={2} />
+                <IconButton aria-label="Edit depot" icon={<EditIcon />} onClick={() => startEditDepot(depot.id)} />
+                <IconButton aria-label="Delete depot" icon={<DeleteIcon />} onClick={() => onOpenDeleteDialog(depot.id)} ml={2} />
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
-
+  
+      {/* Pagination Controls */}
       <Flex justifyContent="center" mt="4">
         <Stack direction="row" spacing={4}>
           <IconButton icon={<ArrowBackIcon />} onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))} isDisabled={currentPage === 1} />
@@ -181,21 +176,22 @@ const BDCCompanies = () => {
           <IconButton icon={<ArrowForwardIcon />} onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))} isDisabled={currentPage === totalPages} />
         </Stack>
       </Flex>
-
+  
+      {/* Delete Confirmation Dialog */}
       <AlertDialog isOpen={isDeleteDialogOpen} leastDestructiveRef={cancelRef} onClose={onCloseDeleteDialog}>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Company
+              Delete Depot
             </AlertDialogHeader>
             <AlertDialogBody>
-              Are you sure you want to delete this company? This action cannot be undone.
+              Are you sure you want to delete this depot? This action cannot be undone.
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onCloseDeleteDialog}>
                 No
               </Button>
-              <Button colorScheme="red" onClick={confirmDeleteBDCCompany} ml={3}>
+              <Button colorScheme="red" onClick={confirmDeleteDepot} ml={3}>
                 Yes
               </Button>
             </AlertDialogFooter>
@@ -203,7 +199,7 @@ const BDCCompanies = () => {
         </AlertDialogOverlay>
       </AlertDialog>
     </Box>
-  );
+  );  
 };
 
-export default BDCCompanies;
+export default DepotsPage;

@@ -24,7 +24,7 @@ import {
   Image
 } from '@chakra-ui/react';
 import {
-  FiMenu, FiHome, FiClipboard, FiUsers, FiSettings, FiBell, FiUser, FiLogOut, FiDroplet, FiRepeat 
+  FiMenu, FiHome, FiClipboard, FiFileText , FiSettings, FiUser, FiLogOut, FiDroplet, FiRepeat 
 } from 'react-icons/fi';
 import Dashboard from './Dashboard';
 import ProductsPage from './DateEntries/ProductsPage';
@@ -33,6 +33,13 @@ import AlertsWidget from './dashboard/AlertsWidget';
 import LoadingRackLiftingsForm from '../components/LoadingRackLiftingsForm';
 import ImportsPage from './ImportsPage';
 import TransferPage from './TransferPage';
+import LogsPage from './DateEntries/LogsPage';
+import Activities from './DateEntries/Activities';
+import DepotsPage from './DateEntries/DepotsPage';
+import IndividualActivitiesReport from '../pages/ReportsPages/IndividualActivitiesReportPage'
+import TotalActivitiesReport from '../pages/ReportsPages/TotalActivitiesReportPage'
+import QueryActivityDetails from '../pages/ReportsPages/QueryActivityDetailsPage'
+
 
 const MainLayout = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -45,14 +52,22 @@ const MainLayout = () => {
       icon: FiClipboard,
       name: 'Data Entries',
       children: [
-        { name: 'Products', path: '/data-entry/products' },
+        { name: 'Activities', path: '/data-entry/activities' },
         { name: 'BDC Companies', path: '/data-entry/bdc-companies' },
-        { name: 'Loading Rack Liftings', path: '/data-entry/loading-rack-liftings' },
-        { name: 'Imports', path: '/data-entry/imports' },
-        { name: 'Transfers', path: '/data-entry/transfers' },
+        { name: 'Depots', path: '/data-entry/depots' },
+        { name: 'Products', path: '/data-entry/products' },
       ],
     },
-    // Add other sidebar items as needed
+    { icon: FiFileText, name: 'Logs', path: '/logs' },
+    {
+      icon: FiClipboard,
+      name: 'Reports',
+      children: [
+        { name: 'Total Activities', path: '/reports/total-activities' },
+        { name: 'Individual Activities', path: '/reports/individual-activities' },
+        { name: 'Activity Details', path: '/reports/query-activity-details' },
+      ],
+    },
   ];
 
   // Function to render sidebar items
@@ -151,6 +166,13 @@ const MainLayout = () => {
             <Route path="/data-entry/loading-rack-liftings" element={<LoadingRackLiftingsForm />} />
             <Route path="/data-entry/imports" element={<ImportsPage />} />
             <Route path="/data-entry/transfers" element={<TransferPage />} />
+            <Route path="logs" element={<LogsPage/>}/>
+            <Route path="/data-entry/activities" element={<Activities/>}/>
+            <Route path="/data-entry/depots" element={<DepotsPage/>}/>
+            <Route path="/reports/total-activities" element={<TotalActivitiesReport/>} />
+            <Route path="/reports/individual-activities" element={<IndividualActivitiesReport/>} />
+            <Route path="/reports/query-activity-details" element={<QueryActivityDetails/>} />
+ 
             {/* Add additional routes here */}
           </Routes>
         </Box>

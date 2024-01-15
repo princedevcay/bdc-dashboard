@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useCookies } from 'react-cookie';
+
 import {
   Box,
   Flex,
@@ -13,8 +15,8 @@ import {
   InputRightElement,
   Text,
   useToast,
-  Link, 
-  Image
+  Link,
+  Image,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +25,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [cookies, setCookie] = useCookies(['isAuthenticated']);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const toast = useToast();
@@ -56,13 +59,40 @@ const Login = () => {
       });
       return;
     }
-
+  
     try {
-      // Replace with your login logic
-      console.log('Username:', username, 'Password:', password);
-      navigate('/dashboard'); // Redirect to dashboard or another route
+      console.log('Sending POST request to /wp-json/jwt-auth/v1/token...');
+  
+      // Send a POST request to your authentication API
+      const response = await fetch('https://africanloomtours.com/wp-json/jwt-auth/v1/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log('JWT Token received:', data.token);
+        // Authentication successful, you can store the user token or session here
+        // Redirect to the dashboard or another route
+        setCookie('isAuthenticated', true, { path: '/' });
+        navigate('/dashboard');
+      } else {
+        // Authentication failed, handle error and display an error message
+        console.error('Login Error:', response.statusText);
+        toast({
+          title: 'Login Error',
+          description: 'Invalid username or password.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
-      // Handle errors
+      // Handle other errors
+      console.error('Login Error:', error);
       toast({
         title: 'Login Error',
         description: 'An error occurred during login.',
@@ -72,15 +102,19 @@ const Login = () => {
       });
     }
   };
+  
 
   return (
     <Flex align="center" justify="center" minHeight="100vh" bg={useColorModeValue('gray.50', 'gray.800')}>
-      <Box as="form" onSubmit={handleLogin} p={8} maxWidth="6y00px" borderWidth={1} borderRadius={8} boxShadow="lg" bg={useColorModeValue('white', 'gray.700')}>
+      <Box as="form" onSubmit={handleLogin} p={8} maxWidth="600px" borderWidth={1} borderRadius={8} boxShadow="lg" bg={useColorModeValue('white', 'gray.700')}>
         <VStack spacing={4} align="flex-start" w="full">
-        <Flex width="full" justify="center"> {/* Center the image */}
+          <Flex width="full" justify="center">
+            {/* Center the image */}
             <Image src="/logo.png" alt="TOR Logo" boxSize="100px" objectFit="contain" />
           </Flex>
-          <Heading as="h2" size="lg">Monitoring & Control Dept.</Heading>
+          <Heading as="h2" size="lg">
+            Monitoring & Control Dept.
+          </Heading>
           <FormControl id="username" isInvalid={errors.username} isRequired>
             <FormLabel>Username</FormLabel>
             <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
@@ -102,8 +136,12 @@ const Login = () => {
             Login
           </Button>
           <Flex justifyContent="space-between" width="full" mt={4}>
-            <Link color="teal.500" href="/forgot-password" fontSize="sm">Forgot password?</Link>
-            <Link color="teal.500" href="/register" fontSize="sm">Register</Link>
+            <Link color="teal.500" href="/forgot-password" fontSize="sm">
+              Forgot password?
+            </Link>
+            <Link color="teal.500" href="/register" fontSize="sm">
+              Register
+            </Link>
           </Flex>
         </VStack>
       </Box>

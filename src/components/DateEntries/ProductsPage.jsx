@@ -1,100 +1,140 @@
-import { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, Button, Table, Thead, Tbody, Tr, Th, Td, Input, useToast, IconButton, Flex,
   InputGroup, InputRightElement, Tooltip, Stack,
   AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay
 } from '@chakra-ui/react';
-import { AddIcon, DeleteIcon, EditIcon, ArrowUpIcon, ArrowDownIcon, SearchIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
-const initialProducts = [
-  { id: 1, name: 'Crude Oil' },
-  { id: 2, name: 'LPG' },
-  { id: 3, name: 'Light Naphtha' },
-  { id: 4, name: 'Heavy Naphtha' },
-  { id: 5, name: 'Straight Run Naphtha' },
-  { id: 6, name: 'Condensate' },
-  { id: 7, name: 'Gasoline Condensate Blend' },
-  { id: 8, name: 'Gasoline' },
-  { id: 9, name: 'Gasoil' },
-  { id: 10, name: 'Kerosene' },
-  { id: 11, name: 'ATK' },
-  { id: 12, name: 'RFO' },
-  { id: 13, name: 'AR' },
-  { id: 14, name: 'Premix' },
-  { id: 15, name: 'Marine Oil' },
-  // ... other products ...
-];
+import {
+  AddIcon, DeleteIcon, EditIcon, ArrowUpIcon, ArrowDownIcon, SearchIcon, ArrowBackIcon, ArrowForwardIcon
+} from '@chakra-ui/icons';
+import * as ProductService from '../../services/productService';
 
 const ProductsPage = () => {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
   const [newProductName, setNewProductName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
   const toast = useToast();
+  const cancelRef = useRef();
+
+  const recordsPerPage = 10;
+
+  // Fetch products from the API when the component mounts
+  useEffect(() => {
+    ProductService.fetchProducts()
+      .then((data) => {
+        setProducts(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  }, []);
+
+  // Function to add a new product
   const addProduct = () => {
     if (newProductName) {
-      const newProduct = { id: products.length + 1, name: newProductName };
-      setProducts([...products, newProduct]);
-      setNewProductName('');
-      toast({
-        title: 'Product added.',
-        description: "We've added the product for you.",
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-      });
+      ProductService.createProduct({ title: { rendered: newProductName } })
+        .then((data) => {
+          setProducts([...products, data]);
+          setNewProductName('');
+          toast({
+            title: 'Product added.',
+            description: "We've added the product for you.",
+            status: 'success',
+            duration: 2000,
+            isClosable: true,
+          });
+        })
+        .catch((error) => {
+          console.error('Error adding product:', error);
+        });
     }
   };
 
-  const deleteProduct = (productId) => {
-    setProducts(products.filter((product) => product.id !== productId));
-    toast({
-      title: 'Product deleted.',
-      description: "We've deleted the product for you.",
-      status: 'info',
-      duration: 2000,
-      isClosable: true,
-    });
+  // Function to delete a product by ID
+  const deleteProduct = async () => {
+    if (productToDelete !== null) {
+      try {
+        // Make an API call to delete the product
+        await ProductService.deleteProduct(productToDelete);
+
+        // Update the products array by filtering out the deleted product
+        const updatedProducts = products.filter((product) => product.id !== productToDelete);
+
+        setProducts(updatedProducts);
+        toast({
+          title: 'Product deleted.',
+          description: "We've deleted the product for you.",
+          status: 'info',
+          duration: 2000,
+          isClosable: true,
+        });
+        onCloseDeleteDialog();
+      } catch (error) {
+        console.error('Error deleting product:', error);
+      }
+    }
   };
 
-  const editProduct = (productId) => {
-    // Placeholder for edit functionality
+  // Function to edit a product
+  const editProduct = async () => {
+    if (selectedProductId !== null && newProductName) {
+      try {
+        // Make an API call to update the product
+        const updatedProduct = await ProductService.updateProduct(selectedProductId, {
+          title: { rendered: newProductName },
+        });
+
+        // Update the products array with the updated product
+        const updatedProducts = products.map((product) => {
+          if (product.id === selectedProductId) {
+            return updatedProduct;
+          }
+          return product;
+        });
+
+        setProducts(updatedProducts);
+        setNewProductName('');
+        setSelectedProductId(null);
+
+        toast({
+          title: 'Product updated.',
+          description: "We've updated the product for you.",
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      } catch (error) {
+        console.error('Error updating product:', error);
+      }
+    }
   };
 
-  const sortProductsAsc = () => {
-    const sortedProducts = [...products].sort((a, b) => a.name.localeCompare(b.name));
-    setProducts(sortedProducts);
-  };
-
-  const sortProductsDesc = () => {
-    const sortedProducts = [...products].sort((a, b) => b.name.localeCompare(a.name));
-    setProducts(sortedProducts);
-  };
-  const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
+  // Calculate the index of the last product on the current page
   const indexOfLastProduct = currentPage * recordsPerPage;
+
+  // Calculate the index of the first product on the current page
   const indexOfFirstProduct = indexOfLastProduct - recordsPerPage;
+
+  // Slice the products array to get only the products for the current page
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  // Calculate the total number of pages based on the number of products
   const totalPages = Math.ceil(products.length / recordsPerPage);
 
-  const filteredProducts = searchQuery
-    ? products.filter(product => product.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : currentProducts;
-  // AlertDialog related state and functions
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState(null);
-  const cancelRef = useRef();
-
+  // Function to handle opening the Delete Confirmation Dialog
   const onOpenDeleteDialog = (productId) => {
     setProductToDelete(productId);
     setIsDeleteDialogOpen(true);
   };
 
+  // Function to handle closing the Delete Confirmation Dialog
   const onCloseDeleteDialog = () => {
+    setProductToDelete(null);
     setIsDeleteDialogOpen(false);
-  };
-
-  const confirmDeleteProduct = () => {
-    deleteProduct(productToDelete);
-    onCloseDeleteDialog();
   };
 
   return (
@@ -116,7 +156,7 @@ const ProductsPage = () => {
             />
           </InputRightElement>
         </InputGroup>
-  
+
         {/* Add Product */}
         <InputGroup size="md">
           <Input
@@ -136,24 +176,28 @@ const ProductsPage = () => {
             </Tooltip>
           </InputRightElement>
         </InputGroup>
-  
-        {/* Sort Products */}
-        <Tooltip label="Sort Products Ascending">
-          <IconButton
-            aria-label="Sort products ascending"
-            icon={<ArrowUpIcon />}
-            onClick={sortProductsAsc}
+
+        {/* Edit Product */}
+        <InputGroup size="md">
+          <Input
+            value={newProductName}
+            onChange={(e) => setNewProductName(e.target.value)}
+            placeholder="Edit product name"
+            pr="4.5rem"
           />
-        </Tooltip>
-        <Tooltip label="Sort Products Descending">
-          <IconButton
-            aria-label="Sort products descending"
-            icon={<ArrowDownIcon />}
-            onClick={sortProductsDesc}
-          />
-        </Tooltip>
+          <InputRightElement width="4.5rem">
+            <Tooltip label="Edit Product">
+              <IconButton
+                aria-label="Edit product"
+                icon={<EditIcon />}
+                h="1.75rem" size="sm"
+                onClick={editProduct}
+              />
+            </Tooltip>
+          </InputRightElement>
+        </InputGroup>
       </Flex>
-  
+
       <Table variant="simple">
         <Thead>
           <Tr>
@@ -163,34 +207,61 @@ const ProductsPage = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {filteredProducts.map((product) => (
+          {currentProducts.map((product) => (
             <Tr key={product.id}>
               <Td>{product.id}</Td>
-              <Td>{product.name}</Td>
+              <Td>{product.title.rendered}</Td>
               <Td>
-                <IconButton aria-label="Edit product" icon={<EditIcon />} onClick={() => editProduct(product.id)} />
-                <IconButton aria-label="Delete product" icon={<DeleteIcon />} onClick={() => onOpenDeleteDialog(product.id)} ml={2} />
+                <IconButton
+                  aria-label="Edit product"
+                  icon={<EditIcon />}
+                  onClick={() => setSelectedProductId(product.id)}
+                />
+                <IconButton
+                  aria-label="Delete product"
+                  icon={<DeleteIcon />}
+                  onClick={() => onOpenDeleteDialog(product.id)}
+                  ml={2}
+                />
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
-  
+
       {/* Pagination Controls */}
       <Flex justifyContent="center" mt="4">
         <Stack direction="row" spacing={4}>
-          <IconButton icon={<ArrowBackIcon />} onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} isDisabled={currentPage === 1} />
+          <IconButton
+            icon={<ArrowBackIcon />}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            isDisabled={currentPage === 1}
+          />
           {Array.from({ length: totalPages }, (_, i) => (
-            <Button key={i + 1} onClick={() => setCurrentPage(i + 1)} isActive={currentPage === i + 1}>
+            <Button
+              key={i + 1}
+              onClick={() => setCurrentPage(i + 1)}
+              isActive={currentPage === i + 1}
+            >
               {i + 1}
             </Button>
           ))}
-          <IconButton icon={<ArrowForwardIcon />} onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} isDisabled={currentPage === totalPages} />
+          <IconButton
+            icon={<ArrowForwardIcon />}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            isDisabled={currentPage === totalPages}
+          />
         </Stack>
       </Flex>
-  
+
       {/* Delete Confirmation Dialog */}
-      <AlertDialog isOpen={isDeleteDialogOpen} leastDestructiveRef={cancelRef} onClose={onCloseDeleteDialog}>
+      <AlertDialog
+        isOpen={isDeleteDialogOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onCloseDeleteDialog}
+      >
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -200,15 +271,18 @@ const ProductsPage = () => {
               Are you sure you want to delete this product? This action cannot be undone.
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onCloseDeleteDialog}>No</Button>
-              <Button colorScheme="red" onClick={confirmDeleteProduct} ml={3}>Yes</Button>
+              <Button ref={cancelRef} onClick={onCloseDeleteDialog}>
+                No
+              </Button>
+              <Button colorScheme="red" onClick={deleteProduct} ml={3}>
+                Yes
+              </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
     </Box>
   );
-  
 };
 
 export default ProductsPage;

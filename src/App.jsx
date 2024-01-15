@@ -1,28 +1,31 @@
-
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 import {
-  ChakraProvider, VStack
+  ChakraProvider,
 } from '@chakra-ui/react';
 import MainLayout from './components/MainLayout';
 import Login from './components/Login';
-import Register from './components/Register'
+import Register from './components/Register';
 import Footer from './components/Footer';
-// ... other imports ...
 
 function App() {
+  const [cookies] = useCookies(['isAuthenticated']);
+
   return (
     <ChakraProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Login/>} />
-          <Route path="*" element={<MainLayout />} />
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/register" element={<Register/>}/>
-          
-
+          {/* Public Routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          {/* Protected Routes */}
+          <Route
+            path="/*"
+            element={cookies.isAuthenticated ? <MainLayout /> : <Navigate to="/" />}
+          />
         </Routes>
       </Router>
-        <Footer /> 
+      <Footer />
     </ChakraProvider>
   );
 }
