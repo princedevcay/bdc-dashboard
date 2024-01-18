@@ -293,7 +293,7 @@ const LogsPage = () => {
           </VStack>
         </GridItem>
       </Grid>
-      {loadingLogs && <p>Loading Activity Logs...</p>}
+      {loadingLogs && <img src="/loading-small.gif" alt="Loading Activity Logs..." />}
       {logEntries.length > 0 && (
         <Table variant="simple" mt={8}>
           <Thead> 
