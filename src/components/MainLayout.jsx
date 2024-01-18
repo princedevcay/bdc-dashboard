@@ -24,8 +24,9 @@ import {
   Image
 } from '@chakra-ui/react';
 import {
-  FiMenu, FiHome, FiClipboard, FiFileText , FiSettings, FiUser, FiLogOut, FiDroplet, FiRepeat 
+  FiMenu, FiHome, FiClipboard, FiFileText , FiSettings, FiUser, FiLogOut, FiDroplet, FiRepeat
 } from 'react-icons/fi';
+import { HiOutlineMenuAlt3, HiOutlineMenuAlt1 } from 'react-icons/hi';
 import Dashboard from './Dashboard';
 import ProductsPage from './DateEntries/ProductsPage';
 import BDCCompanies from './DateEntries/BDCCompanies';
@@ -44,6 +45,11 @@ import QueryActivityDetails from '../pages/ReportsPages/QueryActivityDetailsPage
 const MainLayout = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
+  const [isExpanded, setExpanded] = useState(true);
+
+  const toggleDrawerSize = () => {
+    setExpanded(!isExpanded);
+  };
 
   // Sidebar content array for mapping, including submenus
   const sidebarContent = [
@@ -115,17 +121,30 @@ const MainLayout = () => {
         </DrawerContent>
       </Drawer>
 
-      {/* Desktop Sidebar */}
-      <Box
-        display={{ base: 'none', md: 'block' }} // Adjusted to hide on mobile
-        width={{ md: '250px' }}
+       {/* Desktop Sidebar */}
+       <Box
+        display={{ base: 'none', md: 'block' }}
+        width={isExpanded ? { md: '250px' } : { md: '80px' }}
         bg="#0c4da2"
         p={4}
         boxShadow="md"
+        transition="width 0.3s"
       >
-         <Flex width="full" justify="center"> {/* Center the image */}
-            <Image src="/logo.png" alt="TOR Logo" bgColor={"white"} borderRadius={"50%"} padding={2} boxSize="100px" objectFit="contain" />
+        <Flex justify="space-between" align="center" mb={4}>
+          <IconButton
+            aria-label="Toggle Menu"
+            icon={<FiMenu />}
+            onClick={onOpen}
+            size="lg"
+            m={2}
+            display={{ base: 'flex', md: 'none' }}
+          />
+          <Flex align="center">
           </Flex>
+        </Flex>
+        <Flex width="full" justify="center">
+          <Image src="/logo.png" alt="TOR Logo" bgColor={"white"} borderRadius={"50%"} padding={2} boxSize="100px" objectFit="contain" />
+        </Flex>
         <Heading size="lg" mb={6} pl={3} justify="center" color={"white"}>Monitoring & Control Dept.</Heading>
         <Box borderBottomWidth="1px"></Box>
         <VStack mt={6} align="stretch" spacing={4}>
