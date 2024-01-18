@@ -87,7 +87,7 @@ export const saveLog = async (logData) => {
     console.log('Sending log entry to API with token:', token);
 
     // Include product information in the post title
-    const title = `${logData.product} - ${logData.activity}`;
+    const title = `${logData.activity}`;
 
     console.log('API URL:', '/activitylog');
     console.log('Request Headers:', {
@@ -122,18 +122,3 @@ export const fetchLogEntries = async () => {
   }
 };
 
-// Fetch current user
-export const fetchCurrentUser = async () => {
-  try {
-    const response = await api.get('/users/me'); // Update the endpoint to match your WordPress setup
-    const currentUser = response.data;
-
-    if (currentUser && currentUser.display_name) {
-      return currentUser.display_name;
-    } else {
-      throw new Error('Display name not found in current user data.');
-    }
-  } catch (error) {
-    throw new Error(`Error fetching current user: ${error.message}`);
-  }
-};

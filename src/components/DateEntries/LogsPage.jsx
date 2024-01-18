@@ -1,121 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box, Button, Table, Thead, Tbody, Tr, Th, Td, Select, VStack, Input, Grid, GridItem, useToast
 } from '@chakra-ui/react';
 
 import { saveLog, fetchLogEntries } from '../../services/productService';
-import { fetchProducts } from '../../services/productService';
-import { fetchActivities } from '../../services/activityService';
-import { fetchBDCCompanies } from '../../services/bdcService';
-import { fetchDepots } from '../../services/depotService';
-import { fetchCurrentUser } from '../../services/productService';
+import { fetchProducts } from '../../services/productService'; // Import fetchProducts
+import { fetchActivities } from '../../services/activityService'; // Import activity service
+import { fetchBDCCompanies } from '../../services/bdcService'; // Import BDCCompaniesContext and fetchBDCCompanies
+import { fetchDepots } from '../../services/depotService'; // Import fetchDepots
+
+
+
 
 const LogsPage = () => {
-  const [currentUser, setCurrentUser] = useState('');
-  const [fetchedProducts, setFetchedProducts] = useState([]);
-  const [fetchedActivities, setFetchedActivities] = useState([]);
+ 
+
+  // Assuming you have a way to get the current logged-in user
+  const currentUser = "John Doe"; // Replace this with your actual logic to get the current user
+  const [fetchedProducts, setFetchedProducts] = useState([]); // State to hold fetched products
+  const [fetchedActivities, setFetchedActivities] = useState([]); // State to hold fetched activities
   const [fetchedBDCCompanies, setFetchedBDCCompanies] = useState([]);
   const [fetchedDepots, setFetchedDepots] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [loadingBDCCompanies, setLoadingBDCCompanies] = useState(false);
-  const [loadingDepots, setLoadingDepots] = useState(false);
-  const [loadingActivities, setLoadingActivities] = useState([]);
-  const [loadingLogs, setLoadingLogs] = useState(false); 
-  
+
   const toast = useToast();
-
-  // Define getCurrentUser function
-  const getCurrentUser = async () => {
-    try {
-      const currentUserData = await fetchCurrentUser();
-      return currentUserData.display_name;
-    } catch (error) {
-      console.error('Error fetching current user:', error);
-      return ''; // Return an empty string or handle the error as needed
-    }
-  };
-
-
-  useEffect(() => {
-    const fetchCurrentUserAndLogEntries = async () => {
-      try {
-        // Fetch the current user (assuming it returns the username directly)
-        const currentUser = await fetchCurrentUser();
-        setCurrentUser(currentUser);
-
-        // Fetch log entries
-        const logEntriesData = await fetchLogEntries();
-        setLogEntries(logEntriesData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchCurrentUserAndLogEntries();
-  }, []);
-
+  
   useEffect(() => {
     const fetchLogEntriesData = async () => {
       try {
-        setLoadingLogs(true); // Set loading indicator
         const logEntriesData = await fetchLogEntries();
         setLogEntries(logEntriesData);
       } catch (error) {
         console.error('Error fetching log entries:', error);
-      } finally {
-        setLoadingLogs(false); // Clear loading indicator
       }
     };
 
     fetchLogEntriesData();
   }, []);
 
+
+
   useEffect(() => {
+    // Fetch products when the component mounts
     const fetchProductsData = async () => {
       try {
-        setLoadingProducts(true);
         const productsData = await fetchProducts();
         setFetchedProducts(productsData);
       } catch (error) {
         console.error('Error fetching products:', error);
-      } finally {
-        setLoadingProducts(false);
       }
     };
 
+    // Fetch BDC companies when the component mounts
     const fetchBDCCompaniesData = async () => {
       try {
-        setLoadingBDCCompanies(true);
         const bdcCompaniesData = await fetchBDCCompanies();
         setFetchedBDCCompanies(bdcCompaniesData);
       } catch (error) {
         console.error('Error fetching BDC companies:', error);
-      } finally {
-        setLoadingBDCCompanies(false);
       }
     };
 
+
+    // Fetch depots when the component mounts
     const fetchDepotsData = async () => {
       try {
-        setLoadingDepots(true);
         const depotsData = await fetchDepots();
         setFetchedDepots(depotsData);
       } catch (error) {
         console.error('Error fetching depots:', error);
-      } finally {
-        setLoadingDepots(false);
       }
     };
 
+    // Fetch activities when the component mounts
     const fetchActivitiesData = async () => {
       try {
-        setLoadingActivities(true);
         const activitiesData = await fetchActivities();
         setFetchedActivities(activitiesData);
       } catch (error) {
         console.error('Error fetching activities:', error);
-      } finally {
-        setLoadingActivities(false);
       }
     };
 
@@ -123,12 +85,14 @@ const LogsPage = () => {
     fetchBDCCompaniesData();
     fetchDepotsData();
     fetchActivitiesData();
-  }, []);
+  }, []); // Empty dependency array ensures this effect runs only once on mount
+
+
 
   const [logEntry, setLogEntry] = useState({
     title: "Your Log Entry Title",
     content: "Additional content or description",
-    status: "publish",
+    status: "publish",  // Set the status to "publish" for automatic publication
     timestamp: '',
     product: '',
     activity: '',
@@ -139,26 +103,18 @@ const LogsPage = () => {
     remarks: '',
     quantityGsv: '',
     quantityMt: '',
-    actionedBy: '',
+    actionedBy: currentUser
   });
-
-  
 
   const [logEntries, setLogEntries] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLogEntry({ ...logEntry, [name]: value });
-    
   };
 
- const handleSubmit = async () => {
-  const timestamp = new Date().toLocaleString();
-
-  try {
-    // Fetch the current user's display_name
-    const actionedBy = await fetchCurrentUser();
-
+  const handleSubmit = async () => {
+    const timestamp = new Date().toLocaleString();
     const logData = {
       ...logEntry,
       acf: {
@@ -173,56 +129,56 @@ const LogsPage = () => {
         remarks: logEntry.remarks,
         quantityGsv: logEntry.quantityGsv,
         quantityMt: logEntry.quantityMt,
-        actionedBy: actionedBy, // Set actionedBy to the display_name
+        actionedBy: logEntry.actionedBy,
       },
     };
-
-    // Save log entry to the server
-    await saveLog(logData);
-
-    // Update the local log entries
-    setLogEntries([...logEntries, logData]);
-
-    // Clear the log entry form
-    setLogEntry({
-      title: "Your Log Entry Title",
-      content: "Additional content or description",
-      status: "publish",
-      timestamp: '', // Clear timestamp for the next entry
-      product: '',
-      activity: '',
-      from: '',
-      inDepot: '',
-      to: '',
-      atDepot: '',
-      remarks: '',
-      quantityGsv: '',
-      quantityMt: '',
-      actionedBy: '',
-    });
-
-    // Display success toast
-    toast({
-      title: 'Log Entry Saved',
-      description: 'Your log entry has been saved successfully.',
-      status: 'success',
-      duration: 5000,
-      isClosable: true,
-    });
-  } catch (error) {
-    console.error('Error saving log:', error);
-
-    // Display error toast
-    toast({
-      title: 'Error Saving Log Entry',
-      description: 'An error occurred while saving the log entry.',
-      status: 'error',
-      duration: 5000,
-      isClosable: true,
-    });
-  }
-};
-
+  
+    try {
+      // Save log entry to the server
+      await saveLog(logData);
+  
+      // Update the local log entries
+      setLogEntries([...logEntries, logData]);
+  
+      // Clear the log entry form
+      setLogEntry({
+        title: "Your Log Entry Title",
+        content: "Additional content or description",
+        status: "publish",
+        timestamp: '', // Clear timestamp for the next entry
+        product: '',
+        activity: '',
+        from: '',
+        inDepot: '',
+        to: '',
+        atDepot: '',
+        remarks: '',
+        quantityGsv: '',
+        quantityMt: '',
+        actionedBy: currentUser,
+      });
+  
+      // Display success toast
+      toast({
+        title: 'Log Entry Saved',
+        description: 'Your log entry has been saved successfully.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error('Error saving log:', error);
+  
+      // Display error toast
+      toast({
+        title: 'Error Saving Log Entry',
+        description: 'An error occurred while saving the log entry.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
   
   
   return (
@@ -241,18 +197,19 @@ const LogsPage = () => {
               ))}
             </Select>
             <Select
-              name="activity"
-              value={logEntry.activity}
-              onChange={handleChange}
-              placeholder="Select Activity"
-            >
-              {fetchedActivities && fetchedActivities.map((activity) => (
-                <option key={activity.id} value={activity.title.rendered}>
-                  {activity.title.rendered}
-                </option>
-              ))}
-            </Select>
-            <Select
+  name="activity"
+  value={logEntry.activity}
+  onChange={handleChange}
+  placeholder="Select Activity"
+>
+  {fetchedActivities && fetchedActivities.map((activity) => (
+    <option key={activity.id} value={activity.title.rendered}>
+      {activity.title.rendered}
+    </option>
+  ))}
+</Select>
+             
+           <Select
               name="from"
               value={logEntry.from}
               onChange={handleChange}
@@ -276,11 +233,16 @@ const LogsPage = () => {
                 </option>
               ))}
             </Select>
+              
           </VStack>
         </GridItem>
 
         <GridItem colSpan={1}>
           <VStack spacing={4} align="flex-start">
+            {/* Add similar selects for 'to' and 'atDepot' */}
+
+            {/* Add inputs for other fields */}
+           
             <Select
               name="to"
               value={logEntry.to}
@@ -311,40 +273,45 @@ const LogsPage = () => {
               onChange={handleChange}
               placeholder="Remarks"
             />
+
+            
+
             <Input
               name="quantityGsv"
               value={logEntry.quantityGsv}
               onChange={handleChange}
               placeholder="Quantity (GSV)"
             />
+
             <Input
               name="quantityMt"
               value={logEntry.quantityMt}
               onChange={handleChange}
               placeholder="Quantity (MT)"
             />
-            <Button mt={4} colorScheme='blue' onClick={handleSubmit}>
+
+            <Button mt={4} onClick={handleSubmit}>
               Submit Log Entry
             </Button>
           </VStack>
         </GridItem>
       </Grid>
-      {loadingLogs && <img src="/loading-small.gif" alt="Loading Activity Logs..." />}
+
       {logEntries.length > 0 && (
         <Table variant="simple" mt={8}>
-          <Thead> 
-            <Tr bgColor="#0C4DA2">
-              <Th color={"white"}>Date/Time Stamp</Th>
-              <Th color={"white"}>Product</Th>
-              <Th color={"white"}>Activity</Th>
-              <Th color={"white"}>From (BDC)</Th>
-              <Th color={"white"}>In Depot</Th>
-              <Th color={"white"}>To Depot</Th>
-              <Th color={"white"}>At Depot</Th>
-              <Th color={"white"}>Remarks</Th>
-              <Th color={"white"}>Quantity (GSV)</Th>
-              <Th color={"white"}>Quantity (MT)</Th>
-              <Th color={"white"}>Actioned By</Th>
+          <Thead>
+            <Tr>
+              <Th>Date/Time Stamp</Th>
+              <Th>Product</Th>
+              <Th>Activity</Th>
+              <Th>From (BDC)</Th>
+              <Th>In Depot</Th>
+              <Th>To Depot</Th>
+              <Th>At Depot</Th>
+              <Th>Remarks</Th>
+              <Th>Quantity (GSV)</Th>
+              <Th>Quantity (MT)</Th>
+              <Th>Actioned By</Th>
             </Tr>
           </Thead>
           <Tbody>
