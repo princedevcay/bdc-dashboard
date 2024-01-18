@@ -97,7 +97,7 @@ const MainLayout = () => {
   };
 
   return (
-    <Flex minHeight="100vh" bg="gray.50">
+    <Flex minHeight="100vh">
       {/* Mobile Drawer */}
       <Drawer isOpen={isOpen} placement="left" onClose={onClose} size="full" >
         <DrawerOverlay />

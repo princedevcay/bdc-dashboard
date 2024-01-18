@@ -77,7 +77,7 @@ const Login = () => {
         console.log('JWT Token received:', data.token);
         // Authentication successful, you can store the user token or session here
         // Redirect to the dashboard or another route
-        setCookie('isAuthenticated', true, { path: '/' });
+        setCookie('isAuthenticated', data.token, { path: '/' });
         navigate('/dashboard');
       } else {
         // Authentication failed, handle error and display an error message

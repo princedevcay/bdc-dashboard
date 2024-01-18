@@ -4,6 +4,7 @@
 import api from "../api"; // Import the axios instance with the base URL
 import { Cookies } from 'react-cookie';
 
+
 const cookies = new Cookies();
 
 // Utility function to get the authentication token
@@ -14,6 +15,7 @@ const getToken = () => {
   }
   return token;
 };
+
 
 // Create a new product
 export const createProduct = async (newProduct) => {
@@ -71,11 +73,12 @@ export const deleteProduct = async (productId) => {
 };
 
 
-// Save a log entry
 // Save a log entry with product information in the title
 export const saveLog = async (logData) => {
   try {
-    const token = cookies.get('isAuthenticated') || '';
+    const token = getToken();
+
+    console.log('Authentication token:', token);
 
     if (!token) {
       throw new Error('Authentication token is missing.');
@@ -86,9 +89,17 @@ export const saveLog = async (logData) => {
     // Include product information in the post title
     const title = `${logData.product} - ${logData.activity}`;
 
+    console.log('API URL:', '/activitylog');
+    console.log('Request Headers:', {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
+    console.log('Request Payload:', { ...logData, title });
+
     const response = await api.post('/activitylog', { ...logData, title }, {
       headers: {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
     });
 
@@ -97,6 +108,16 @@ export const saveLog = async (logData) => {
     return response.data;
   } catch (error) {
     console.error('Error saving log entry:', error);
+    throw error;
+  }
+};
+
+// Fetch log entries
+export const fetchLogEntries = async () => {
+  try {
+    const response = await api.get('/activitylog'); // Adjust the endpoint as needed
+    return response.data;
+  } catch (error) {
     throw error;
   }
 };
