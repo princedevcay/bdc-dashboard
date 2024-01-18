@@ -8,9 +8,10 @@ import { fetchProducts } from '../../services/productService';
 import { fetchActivities } from '../../services/activityService';
 import { fetchBDCCompanies } from '../../services/bdcService';
 import { fetchDepots } from '../../services/depotService';
+import { fetchCurrentUser } from '../../services/productService';
 
 const LogsPage = () => {
-  const currentUser = "John Doe";
+  const [currentUser, setCurrentUser] = useState('');
   const [fetchedProducts, setFetchedProducts] = useState([]);
   const [fetchedActivities, setFetchedActivities] = useState([]);
   const [fetchedBDCCompanies, setFetchedBDCCompanies] = useState([]);
@@ -22,6 +23,36 @@ const LogsPage = () => {
   const [loadingLogs, setLoadingLogs] = useState(false); 
   
   const toast = useToast();
+
+  // Define getCurrentUser function
+  const getCurrentUser = async () => {
+    try {
+      const currentUserData = await fetchCurrentUser();
+      return currentUserData.display_name;
+    } catch (error) {
+      console.error('Error fetching current user:', error);
+      return ''; // Return an empty string or handle the error as needed
+    }
+  };
+
+
+  useEffect(() => {
+    const fetchCurrentUserAndLogEntries = async () => {
+      try {
+        // Fetch the current user (assuming it returns the username directly)
+        const currentUser = await fetchCurrentUser();
+        setCurrentUser(currentUser);
+
+        // Fetch log entries
+        const logEntriesData = await fetchLogEntries();
+        setLogEntries(logEntriesData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchCurrentUserAndLogEntries();
+  }, []);
 
   useEffect(() => {
     const fetchLogEntriesData = async () => {
@@ -108,7 +139,7 @@ const LogsPage = () => {
     remarks: '',
     quantityGsv: '',
     quantityMt: '',
-    actionedBy: currentUser
+    actionedBy: '',
   });
 
   
@@ -121,8 +152,13 @@ const LogsPage = () => {
     
   };
 
-  const handleSubmit = async () => {
-    const timestamp = new Date().toLocaleString();
+ const handleSubmit = async () => {
+  const timestamp = new Date().toLocaleString();
+
+  try {
+    // Fetch the current user's display_name
+    const actionedBy = await getCurrentUser();
+
     const logData = {
       ...logEntry,
       acf: {
@@ -137,56 +173,56 @@ const LogsPage = () => {
         remarks: logEntry.remarks,
         quantityGsv: logEntry.quantityGsv,
         quantityMt: logEntry.quantityMt,
-        actionedBy: logEntry.actionedBy,
+        actionedBy: actionedBy, // Set actionedBy to the display_name
       },
     };
-  
-    try {
-      // Save log entry to the server
-      await saveLog(logData);
-  
-      // Update the local log entries
-      setLogEntries([...logEntries, logData]);
-  
-      // Clear the log entry form
-      setLogEntry({
-        title: "Your Log Entry Title",
-        content: "Additional content or description",
-        status: "publish",
-        timestamp: '', // Clear timestamp for the next entry
-        product: '',
-        activity: '',
-        from: '',
-        inDepot: '',
-        to: '',
-        atDepot: '',
-        remarks: '',
-        quantityGsv: '',
-        quantityMt: '',
-        actionedBy: currentUser,
-      });
-  
-      // Display success toast
-      toast({
-        title: 'Log Entry Saved',
-        description: 'Your log entry has been saved successfully.',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error('Error saving log:', error);
-  
-      // Display error toast
-      toast({
-        title: 'Error Saving Log Entry',
-        description: 'An error occurred while saving the log entry.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
+
+    // Save log entry to the server
+    await saveLog(logData);
+
+    // Update the local log entries
+    setLogEntries([...logEntries, logData]);
+
+    // Clear the log entry form
+    setLogEntry({
+      title: "Your Log Entry Title",
+      content: "Additional content or description",
+      status: "publish",
+      timestamp: '', // Clear timestamp for the next entry
+      product: '',
+      activity: '',
+      from: '',
+      inDepot: '',
+      to: '',
+      atDepot: '',
+      remarks: '',
+      quantityGsv: '',
+      quantityMt: '',
+      actionedBy: '',
+    });
+
+    // Display success toast
+    toast({
+      title: 'Log Entry Saved',
+      description: 'Your log entry has been saved successfully.',
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    });
+  } catch (error) {
+    console.error('Error saving log:', error);
+
+    // Display error toast
+    toast({
+      title: 'Error Saving Log Entry',
+      description: 'An error occurred while saving the log entry.',
+      status: 'error',
+      duration: 5000,
+      isClosable: true,
+    });
+  }
+};
+
   
   
   return (

@@ -121,3 +121,29 @@ export const fetchLogEntries = async () => {
     throw error;
   }
 };
+
+// Fetch current user
+// productService.js
+
+export const fetchCurrentUser = async () => {
+  try {
+    const response = await api.get('/users/me', {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${getToken()}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    // Assuming the username is present in the response data
+    const username = response.data?.name;
+
+    if (!username) {
+      throw new Error('Username not found in the response.');
+    }
+
+    return username;
+  } catch (error) {
+    throw new Error(`Error fetching current user: ${error.message}`);
+  }
+};
