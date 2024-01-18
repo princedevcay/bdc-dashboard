@@ -123,26 +123,16 @@ export const fetchLogEntries = async () => {
 };
 
 // Fetch current user
-// productService.js
-
 export const fetchCurrentUser = async () => {
   try {
-    const response = await api.get('/users/me', {
-      withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await api.get('/users/me'); // Update the endpoint to match your WordPress setup
+    const currentUser = response.data;
 
-    // Assuming the username is present in the response data
-    const username = response.data?.name;
-
-    if (!username) {
-      throw new Error('Username not found in the response.');
+    if (currentUser && currentUser.display_name) {
+      return currentUser.display_name;
+    } else {
+      throw new Error('Display name not found in current user data.');
     }
-
-    return username;
   } catch (error) {
     throw new Error(`Error fetching current user: ${error.message}`);
   }

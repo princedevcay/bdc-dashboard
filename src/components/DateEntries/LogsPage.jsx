@@ -157,7 +157,7 @@ const LogsPage = () => {
 
   try {
     // Fetch the current user's display_name
-    const actionedBy = await getCurrentUser();
+    const actionedBy = await fetchCurrentUser();
 
     const logData = {
       ...logEntry,
