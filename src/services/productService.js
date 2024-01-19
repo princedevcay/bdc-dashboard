@@ -119,31 +119,16 @@ export const fetchLogEntries = async () => {
     const response = await api.get('/activitylog');
     const logEntries = response.data;
 
-    // Fetch author details for each log entry
-    const logEntriesWithAuthor = await Promise.all(logEntries.map(async entry => {
-      const authorId = entry.author;
-      const authorDetails = await fetchAuthorDetails(authorId);
-      return { ...entry, authorDetails };
-    }));
-
-    return logEntriesWithAuthor;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const fetchAuthorDetails = async (authorId) => {
-  try {
-    const token = getToken(); // Assuming you have a function to retrieve the authentication token
-
-    const response = await api.get(`/users/${authorId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    // Omitting author details from each log entry
+    const logEntriesWithoutAuthor = logEntries.map(entry => {
+      // Destructure the entry to exclude authorDetails
+      const { authorDetails, ...entryWithoutAuthor } = entry;
+      return entryWithoutAuthor;
     });
 
-    return response.data;
+    return logEntriesWithoutAuthor;
   } catch (error) {
     throw error;
   }
 };
+
