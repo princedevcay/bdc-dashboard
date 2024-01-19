@@ -324,7 +324,7 @@ const LogsPage = () => {
                 <Td>{log.acf && log.acf.remarks}</Td>
                 <Td>{log.acf && log.acf.quantityGsv}</Td>
                 <Td>{log.acf && log.acf.quantityMt}</Td>
-                <Td>{log.author && log.author.name}</Td>
+                <Td>{log.authorDetails && log.authorDetails.name}</Td>
               </Tr>
             ))}
           </Tbody>

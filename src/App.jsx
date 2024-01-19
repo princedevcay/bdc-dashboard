@@ -7,6 +7,7 @@ import MainLayout from './components/MainLayout';
 import Login from './components/Login';
 import Register from './components/Register';
 import Footer from './components/Footer';
+import Hello from './components/Hello';
 
 function App() {
   const [cookies] = useCookies(['isAuthenticated']);
@@ -18,6 +19,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path='/hello' element={<Hello/>}/>
           {/* Protected Routes */}
           <Route
             path="/*"

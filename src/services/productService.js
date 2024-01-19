@@ -112,13 +112,38 @@ export const saveLog = async (logData) => {
   }
 };
 
-// Fetch log entries
+
+
 export const fetchLogEntries = async () => {
   try {
-    const response = await api.get('/activitylog'); // Adjust the endpoint as needed
-    return response.data;
+    const response = await api.get('/activitylog');
+    const logEntries = response.data;
+
+    // Fetch author details for each log entry
+    const logEntriesWithAuthor = await Promise.all(logEntries.map(async entry => {
+      const authorId = entry.author;
+      const authorDetails = await fetchAuthorDetails(authorId);
+      return { ...entry, authorDetails };
+    }));
+
+    return logEntriesWithAuthor;
   } catch (error) {
     throw error;
   }
 };
 
+const fetchAuthorDetails = async (authorId) => {
+  try {
+    const token = getToken(); // Assuming you have a function to retrieve the authentication token
+
+    const response = await api.get(`/users/${authorId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
