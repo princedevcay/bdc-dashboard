@@ -1,94 +1,119 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Box, Button, Table, Thead, Tbody, Tr, Th, Td, Input, useToast, IconButton, Flex,
-  InputGroup, InputRightElement, Tooltip, Stack,
+  InputGroup, InputRightElement, Tooltip, Stack, Spinner,
   AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay
 } from '@chakra-ui/react';
-import { AddIcon, DeleteIcon, EditIcon, ArrowUpIcon, ArrowDownIcon, SearchIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
-
-// Replace this with actual BDC companies from your document
-const initialBDCCompanies = [
-  { id: 1, name: 'ALFAPETRO' },
-  { id: 2, name: 'ASTRA' },
-  { id: 3, name: 'BATTOP' },
-  { id: 4, name: 'BLUE OCEAN' },
-  { id: 5, name: 'BOST (G4O)' },
-  { id: 6, name: 'BOST - OLD' },
-  { id: 7, name: 'CHASE' },
-  { id: 8, name: 'CIRRUS' },
-  { id: 9, name: 'DEEN PETRO' },
-  { id: 10, name: 'DOME' },
-  { id: 11, name: 'DOMINION' },
-  // ... add more BDC companies as necessary ...
-];
+import { AddIcon, DeleteIcon, EditIcon, SearchIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
+import * as bdcService from '../../services/bdcService'; // Updated import for bdcService
+import { useBDCCompaniesContext } from '../../contexts/BDCCompaniesContext';
 
 const BDCCompanies = () => {
-  const [BDCCompanies, setBDCCompanies] = useState(initialBDCCompanies);
+  const { BDCCompanies, setBDCCompanies } = useBDCCompaniesContext();
   const [newBDCCompanyName, setNewBDCCompanyName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editingBDCCompanyId, setEditingBDCCompanyId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
+  const [isLoading, setIsLoading] = useState(true);
   const toast = useToast();
   const cancelRef = useRef();
+  const recordsPerPage = 10;
 
-  const addBDCCompany = () => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await bdcService.fetchBDCCompanies();
+        setBDCCompanies(data);
+        setIsLoading(false); // Set loading to false once data is fetched
+      } catch (error) {
+        console.error('Error fetching BDC companies:', error.message);
+      }
+    };
+
+    fetchData();
+  }, [setBDCCompanies]);
+
+  const addBDCCompany = async () => {
     if (newBDCCompanyName) {
-      const newCompany = { id: BDCCompanies.length + 1, name: newBDCCompanyName };
-      setBDCCompanies([...BDCCompanies, newCompany]);
-      setNewBDCCompanyName('');
-      toast({
-        title: 'Company added.',
-        description: "We've added the BDC company for you.",
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-      });
+      try {
+        const data = await bdcService.createBDCCompany({ name: newBDCCompanyName });
+        setBDCCompanies([...BDCCompanies, data]);
+        setNewBDCCompanyName('');
+        toast({
+          title: 'BDC Company added.',
+          description: 'New BDC Company Added Successfully.',
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      } catch (error) {
+        console.error('Error adding BDC Company:', error.message);
+      }
     }
   };
 
-  const startEditBDCCompany = (companyId) => {
-    const company = BDCCompanies.find(c => c.id === companyId);
-    setNewBDCCompanyName(company.name);
-    setEditingBDCCompanyId(companyId);
+  const startEditBDCCompany = (BDCCompanyId) => {
+    const BDCCompany = BDCCompanies.find(bdc => bdc.id === BDCCompanyId);
+    setNewBDCCompanyName(BDCCompany.title.rendered);
+    setEditingBDCCompanyId(BDCCompanyId);
     setIsEditing(true);
   };
 
-  const editBDCCompany = () => {
+  const editBDCCompany = async () => {
     if (newBDCCompanyName && editingBDCCompanyId) {
-      setBDCCompanies(BDCCompanies.map(company => {
-        if (company.id === editingBDCCompanyId) {
-          return { ...company, name: newBDCCompanyName };
-        }
-        return company;
-      }));
-      setNewBDCCompanyName('');
-      setIsEditing(false);
-      setEditingBDCCompanyId(null);
+      try {
+        console.log('Editing BDC Company:', editingBDCCompanyId);
+  
+        const data = await bdcService.updateBDCCompany(editingBDCCompanyId, { name: newBDCCompanyName });
+        console.log('API Response after edit:', data);
+  
+        const updatedBDCCompany = { ...BDCCompanies.find(bdc => bdc.id === editingBDCCompanyId), name: newBDCCompanyName };
+        console.log('Updated BDC Company:', updatedBDCCompany);
+  
+        const updatedCompanies = BDCCompanies.map(bdc => (bdc.id === editingBDCCompanyId ? updatedBDCCompany : bdc));
+        console.log('Updated BDC Companies Array:', updatedCompanies);
+  
+        setBDCCompanies(updatedCompanies);
+  
+        setNewBDCCompanyName('');
+        setIsEditing(false);
+        setEditingBDCCompanyId(null);
+  
+        toast({
+          title: 'BDC Company updated.',
+          description: 'BDC Company Updated Successfully.',
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      } catch (error) {
+        console.error('Error updating BDC Company:', error.message);
+      }
+    }
+  };
+  
+
+  const deleteBDCCompany = async (BDCCompanyId) => {
+    try {
+      await bdcService.deleteBDCCompany(BDCCompanyId);
+      setBDCCompanies(BDCCompanies.filter(bdc => bdc.id !== BDCCompanyId));
+  
       toast({
-        title: 'Company updated.',
-        description: "We've updated the BDC company for you.",
-        status: 'success',
+        title: 'BDC Company deleted.',
+        description: 'BDC Company Successfully deleted.',
+        status: 'info',
         duration: 2000,
         isClosable: true,
       });
+    } catch (error) {
+      console.error('Error deleting BDC Company:', error.message);
     }
   };
 
-  const deleteBDCCompany = (companyId) => {
-    setBDCCompanies(BDCCompanies.filter((company) => company.id !== companyId));
-    toast({
-      title: 'Company deleted.',
-      description: "We've deleted the BDC company for you.",
-      status: 'info',
-      duration: 2000,
-      isClosable: true,
-    });
-  };
-
-  const onOpenDeleteDialog = (companyId) => {
-    setEditingBDCCompanyId(companyId);
+  const onOpenDeleteDialog = (BDCCompanyId) => {
+    setEditingBDCCompanyId(BDCCompanyId);
     setIsDeleteDialogOpen(true);
   };
 
@@ -96,18 +121,33 @@ const BDCCompanies = () => {
     setIsDeleteDialogOpen(false);
   };
 
-  const confirmDeleteBDCCompany = () => {
-    deleteBDCCompany(editingBDCCompanyId);
-    onCloseDeleteDialog();
+  const confirmDeleteBDCCompany = async () => {
+    try {
+      await bdcService.deleteBDCCompany(editingBDCCompanyId);
+      onCloseDeleteDialog();
+      setBDCCompanies(BDCCompanies.filter(bdc => bdc.id !== editingBDCCompanyId));
+      toast({
+        title: 'BDC Company deleted.',
+        description: 'BDC Company Successfully deleted.',
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error('Error deleting BDC Company:', error.message);
+    }
   };
 
   const filteredBDCCompanies = searchQuery
-    ? BDCCompanies.filter(company => company.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : BDCCompanies.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage);
+  ? (BDCCompanies || []).filter(bdc => { // Add a nullish coalescing operator to handle undefined
+      const title = bdc.title.rendered || '';
+      return title.toLowerCase().includes(searchQuery.toLowerCase());
+    })
+  : (BDCCompanies || []).slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage);
 
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const totalPages = Math.ceil(BDCCompanies.length / recordsPerPage);
+  const totalPages = Math.ceil((BDCCompanies || []).length / recordsPerPage);
+
 
   return (
     <Box p={4} mb={10}>
@@ -116,12 +156,12 @@ const BDCCompanies = () => {
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search company"
+            placeholder="Search BDC Company"
             pr="4.5rem"
           />
           <InputRightElement width="4.5rem">
             <IconButton
-              aria-label="Search company"
+              aria-label="Search BDC Company"
               icon={<SearchIcon />}
               h="1.75rem" size="sm"
             />
@@ -130,15 +170,15 @@ const BDCCompanies = () => {
 
         <InputGroup size="md">
           <Input
-            value={newBDCCompanyName}
+            value={newBDCCompanyName || ''}
             onChange={(e) => setNewBDCCompanyName(e.target.value)}
-            placeholder={isEditing ? "Edit company name" : "New company name"}
+            placeholder={isEditing ? 'Edit BDC Company' : 'Add New BDC Company'}
             pr="4.5rem"
           />
           <InputRightElement width="4.5rem">
-            <Tooltip label={isEditing ? "Confirm Edit" : "Add Company"}>
+            <Tooltip label={isEditing ? 'Confirm Edit' : 'Add BDC Company'}>
               <IconButton
-                aria-label={isEditing ? "Confirm edit" : "Add company"}
+                aria-label={isEditing ? 'Confirm edit' : 'Add BDC Company'}
                 icon={isEditing ? <EditIcon /> : <AddIcon />}
                 h="1.75rem" size="sm"
                 onClick={isEditing ? editBDCCompany : addBDCCompany}
@@ -148,28 +188,33 @@ const BDCCompanies = () => {
         </InputGroup>
       </Flex>
 
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>ID</Th>
-            <Th>Name</Th>
-            <Th>Actions</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {filteredBDCCompanies.map((company) => (
-            <Tr key={company.id}>
-              <Td>{company.id}</Td>
-              <Td>{company.name}</Td>
-              <Td>
-                <IconButton aria-label="Edit company" icon={<EditIcon />} onClick={() => startEditBDCCompany(company.id)} />
-                <IconButton aria-label="Delete company" icon={<DeleteIcon />} onClick={() => onOpenDeleteDialog(company.id)} ml={2} />
-              </Td>
+      {isLoading ? (
+        <Flex justifyContent="center" alignItems="center" height="300px">
+          <Spinner size="xl" />
+        </Flex>
+      ) : (
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>ID</Th>
+              <Th>Name</Th>
+              <Th>Actions</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
-
+          </Thead>
+          <Tbody>
+            {filteredBDCCompanies.map((bdc) => (
+              <Tr key={bdc.id}>
+                <Td>{bdc.id}</Td>
+                <Td>{bdc.title.rendered}</Td>
+                <Td>
+                  <IconButton aria-label="Edit BDC Company" icon={<EditIcon />} onClick={() => startEditBDCCompany(bdc.id)} />
+                  <IconButton aria-label="Delete BDC Company" icon={<DeleteIcon />} onClick={() => onOpenDeleteDialog(bdc.id)} ml={2} />
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      )}
       <Flex justifyContent="center" mt="4">
         <Stack direction="row" spacing={4}>
           <IconButton icon={<ArrowBackIcon />} onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))} isDisabled={currentPage === 1} />
@@ -186,10 +231,10 @@ const BDCCompanies = () => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Company
+              Delete BDC Company
             </AlertDialogHeader>
             <AlertDialogBody>
-              Are you sure you want to delete this company? This action cannot be undone.
+              Are you sure you want to delete this BDC Company? This action cannot be undone.
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onCloseDeleteDialog}>
