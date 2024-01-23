@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box, Button, Table, Thead, Tbody, Tr, Th, Td, Select, VStack, Input, Grid, GridItem, useToast
+  Box, Button, Table, Thead, Tbody, Tr, Th, Td, Select, VStack, Input, Grid, GridItem, useToast, Spinner, Flex
 } from '@chakra-ui/react';
 
 import { saveLog, fetchLogEntries } from '../../services/productService';
@@ -15,9 +15,6 @@ const LogsPage = () => {
   const [fetchedActivities, setFetchedActivities] = useState([]);
   const [fetchedBDCCompanies, setFetchedBDCCompanies] = useState([]);
   const [fetchedDepots, setFetchedDepots] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [loadingBDCCompanies, setLoadingBDCCompanies] = useState(false);
-  const [loadingDepots, setLoadingDepots] = useState(false);
   const [loadingActivities, setLoadingActivities] = useState(false); // Updated
   const [loadingLogs, setLoadingLogs] = useState(false); // Added
   const [logEntries, setLogEntries] = useState([]);
@@ -235,10 +232,6 @@ const LogsPage = () => {
                 </option>
               ))}
             </Select>
-            {loadingProducts && <p>Loading products...</p>}
-            {loadingBDCCompanies && <p>Loading BDC companies...</p>}
-            {loadingDepots && <p>Loading depots...</p>}
-            {loadingActivities && <p>Loading activities...</p>}
           </VStack>
         </GridItem>
 
@@ -293,8 +286,12 @@ const LogsPage = () => {
         </GridItem>
       </Grid>
 
-      {loadingLogs && <p>Loading Activity Logs...</p>}
-      {logEntries.length > 0 && (
+      {loadingLogs ? (
+        <Flex justifyContent="center" alignItems="center" height="300px">
+        <Spinner size="lg" color="blue.500" />
+        </Flex>
+      ) : (
+        logEntries.length > 0 && (
         <Table variant="simple" mt={8}>
           <Thead>
             <Tr bgColor="#0C4DA2" color="white">
@@ -329,6 +326,7 @@ const LogsPage = () => {
             ))}
           </Tbody>
         </Table>
+         )
       )}
     </Box>
   );

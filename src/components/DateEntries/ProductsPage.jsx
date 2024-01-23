@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import  { useState, useEffect, useRef } from 'react';
 import {
   Box, Button, Table, Thead, Tbody, Tr, Th, Td, Input, useToast, IconButton, Flex,
-  InputGroup, InputRightElement, Tooltip, Stack,
+  InputGroup, InputRightElement, Tooltip, Stack, Spinner,
   AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay
 } from '@chakra-ui/react';
 import {
@@ -11,27 +11,35 @@ import * as ProductService from '../../services/productService';
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
   const [newProductName, setNewProductName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [loading, setLoading] = useState(false);
   const toast = useToast();
   const cancelRef = useRef();
 
   const recordsPerPage = 10;
 
   // Fetch products from the API when the component mounts
+  const fetchProductsData = async () => {
+    try {
+      setLoading(true);
+      const productsData = await ProductService.fetchProducts();
+      setProducts(productsData);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    ProductService.fetchProducts()
-      .then((data) => {
-        setProducts(data);
-      })
-      .catch((error) => {
-        console.error('Error fetching products:', error);
-      });
-  }, []);
+    fetchProductsData();
+  }, []); // Fetch products when the component mounts
 
   // Function to add a new product
   const addProduct = () => {
@@ -58,6 +66,7 @@ const ProductsPage = () => {
   const deleteProduct = async () => {
     if (productToDelete !== null) {
       try {
+        setLoading(true);
         // Make an API call to delete the product
         await ProductService.deleteProduct(productToDelete);
 
@@ -75,6 +84,15 @@ const ProductsPage = () => {
         onCloseDeleteDialog();
       } catch (error) {
         console.error('Error deleting product:', error);
+        toast({
+          title: 'Error Deleting Product',
+          description: 'An error occurred while deleting the product.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -83,6 +101,7 @@ const ProductsPage = () => {
   const editProduct = async () => {
     if (selectedProductId !== null && newProductName) {
       try {
+        setLoading(true);
         // Make an API call to update the product
         const updatedProduct = await ProductService.updateProduct(selectedProductId, {
           title: { rendered: newProductName },
@@ -109,6 +128,15 @@ const ProductsPage = () => {
         });
       } catch (error) {
         console.error('Error updating product:', error);
+        toast({
+          title: 'Error Updating Product',
+          description: 'An error occurred while updating the product.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -139,95 +167,84 @@ const ProductsPage = () => {
 
   return (
     <Box p={4} mb={10}>
-      <Flex gap={2} mb={4} alignItems="center">
-        {/* Search Functionality */}
-        <InputGroup size="md">
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search product"
-            pr="4.5rem"
-          />
-          <InputRightElement width="4.5rem">
-            <IconButton
-              aria-label="Search product"
-              icon={<SearchIcon />}
-              h="1.75rem" size="sm"
-            />
-          </InputRightElement>
-        </InputGroup>
+    <Flex gap={2} mb={4} alignItems="center">
+  {/* Search Functionality */}
+  <InputGroup size="md">
+    <Input
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      placeholder="Search products"
+      pr="4.5rem"
+    />
+    <InputRightElement width="4.5rem">
+      <IconButton
+        aria-label="Search products"
+        icon={<SearchIcon />}
+        h="1.75rem" size="sm"
+      />
+    </InputRightElement>
+  </InputGroup>
 
-        {/* Add Product */}
-        <InputGroup size="md">
-          <Input
-            value={newProductName}
-            onChange={(e) => setNewProductName(e.target.value)}
-            placeholder="New product name"
-            pr="4.5rem"
-          />
-          <InputRightElement width="4.5rem">
-            <Tooltip label="Add Product">
-              <IconButton
-                aria-label="Add product"
-                icon={<AddIcon />}
-                h="1.75rem" size="sm"
-                onClick={addProduct}
-              />
-            </Tooltip>
-          </InputRightElement>
-        </InputGroup>
+  {/* Add/Edit Product */}
+  <InputGroup size="md">
+    <Input
+      value={newProductName}
+      onChange={(e) => setNewProductName(e.target.value)}
+      placeholder={isEditing ? "Edit product name" : "New product name"}
+      pr="4.5rem"
+    />
+    <InputRightElement width="4.5rem">
+      <Tooltip label={isEditing ? "Confirm Edit" : "Add Product"}>
+        <IconButton
+          aria-label={isEditing ? "Confirm edit" : "Add product"}
+          icon={isEditing ? <EditIcon /> : <AddIcon />}
+          h="1.75rem" size="sm"
+          onClick={isEditing ? editProduct : addProduct}
+        />
+      </Tooltip>
+    </InputRightElement>
+  </InputGroup>
+</Flex>
 
-        {/* Edit Product */}
-        <InputGroup size="md">
-          <Input
-            value={newProductName}
-            onChange={(e) => setNewProductName(e.target.value)}
-            placeholder="Edit product name"
-            pr="4.5rem"
-          />
-          <InputRightElement width="4.5rem">
-            <Tooltip label="Edit Product">
-              <IconButton
-                aria-label="Edit product"
-                icon={<EditIcon />}
-                h="1.75rem" size="sm"
-                onClick={editProduct}
-              />
-            </Tooltip>
-          </InputRightElement>
-        </InputGroup>
-      </Flex>
 
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>ID</Th>
-            <Th>Name</Th>
-            <Th>Actions</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {currentProducts.map((product) => (
-            <Tr key={product.id}>
-              <Td>{product.id}</Td>
-              <Td>{product.title.rendered}</Td>
-              <Td>
-                <IconButton
-                  aria-label="Edit product"
-                  icon={<EditIcon />}
-                  onClick={() => setSelectedProductId(product.id)}
-                />
-                <IconButton
-                  aria-label="Delete product"
-                  icon={<DeleteIcon />}
-                  onClick={() => onOpenDeleteDialog(product.id)}
-                  ml={2}
-                />
-              </Td>
+      {/* Display Spinner if loading */}
+      {loading && <Flex justifyContent="center" alignItems="center" height="300px">
+        <Spinner size="lg" color="blue.500" />
+        </Flex>}
+
+      {/* Display Table if not loading */}
+      {!loading && (
+        <Table variant="simple">
+          <Thead>
+            <Tr bgColor="#0C4DA2">
+              <Th color="white">ID</Th>
+              <Th color="white">Name</Th>
+              <Th color="white">Actions</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
+          </Thead>
+          <Tbody>
+            {currentProducts.map((product) => (
+              <Tr key={product.id}>
+                <Td>{product.id}</Td>
+                <Td>{product.title.rendered}</Td>
+                <Td>
+                  <IconButton
+                    aria-label="Edit product"
+                    icon={<EditIcon />}
+                    onClick={() => setSelectedProductId(product.id)}
+                  />
+                  <IconButton
+                    aria-label="Delete product"
+                    icon={<DeleteIcon />}
+                    onClick={() => onOpenDeleteDialog(product.id)}
+                    ml={2}
+                  />
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      )}
 
       {/* Pagination Controls */}
       <Flex justifyContent="center" mt="4">

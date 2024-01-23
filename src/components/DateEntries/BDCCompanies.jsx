@@ -190,15 +190,15 @@ const BDCCompanies = () => {
 
       {isLoading ? (
         <Flex justifyContent="center" alignItems="center" height="300px">
-          <Spinner size="xl" />
+          <Spinner size="xl" color="blue.500" />
         </Flex>
       ) : (
         <Table variant="simple">
           <Thead>
-            <Tr>
-              <Th>ID</Th>
-              <Th>Name</Th>
-              <Th>Actions</Th>
+            <Tr bgColor="#0C4DA2">
+              <Th color="white">ID</Th>
+              <Th color="white">Name</Th>
+              <Th color="white">Actions</Th>
             </Tr>
           </Thead>
           <Tbody>
