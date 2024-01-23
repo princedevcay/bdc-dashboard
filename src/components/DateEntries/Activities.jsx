@@ -1,12 +1,14 @@
 // Activities.js
+
 import { useState, useRef, useEffect } from 'react';
 import {
   Box, Button, Table, Thead, Tbody, Tr, Th, Td, Input, useToast, IconButton, Flex,
   InputGroup, InputRightElement, Tooltip, Stack,
-  AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay
+  AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, Spinner
 } from '@chakra-ui/react';
-import { AddIcon, DeleteIcon, EditIcon, ArrowUpIcon, ArrowDownIcon, SearchIcon, ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
+import { AddIcon, DeleteIcon, EditIcon, ArrowBackIcon, ArrowForwardIcon, SearchIcon } from '@chakra-ui/icons';
 import { useActivityContext } from '../../contexts/ActivityContext';
+import * as activityService from '../../services/activityService'; 
 
 const Activities = () => {
   const [newActivityName, setNewActivityName] = useState('');
@@ -15,83 +17,95 @@ const Activities = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // State for loading indicator
   const toast = useToast();
   const cancelRef = useRef();
   const { activities, updateActivities } = useActivityContext();
   const recordsPerPage = 10;
 
-  // useEffect to fetch data when the component mounts
   useEffect(() => {
-    // Simulate fetching data from an API
     const fetchData = async () => {
-      // Fetch your data here
-      const fetchedData = [
-        { id: 1, name: 'DEPOT TRANSFER OUT' },
-        { id: 2, name: 'IMPORT' },
-        { id: 3, name: 'LOADING RACK LIFTINGS' },
-        // ... other initial activities ...
-      ];
-
-      // Update the context with the fetched data
-      updateActivities(fetchedData);
+      try {
+        const data = await activityService.fetchActivities();
+        updateActivities(data);
+        setIsLoading(false); // Set loading to false once data is fetched
+      } catch (error) {
+        console.error('Error fetching activity data:', error.message);
+      }
     };
 
     fetchData();
   }, [updateActivities]);
 
-  const addActivity = () => {
+  const addActivity = async () => {
     if (newActivityName) {
-      const newActivity = { id: activities.length + 1, name: newActivityName };
-      updateActivities([...activities, newActivity]);
-      setNewActivityName('');
-      toast({
-        title: 'Activity added.',
-        description: "We've added the activity for you.",
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-      });
+      try {
+        const data = await activityService.createActivity({ name: newActivityName });
+        updateActivities([...activities, data]);
+        setNewActivityName('');
+        toast({
+          title: 'Activity added.',
+          description: "New Activity Added Successfully.",
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      } catch (error) {
+        console.error('Error adding activity:', error.message);
+      }
     }
   };
 
   const startEditActivity = (activityId) => {
     const activity = activities.find(a => a.id === activityId);
-    setNewActivityName(activity.name);
+    setNewActivityName(activity.title.rendered);  // Set the current activity's title
     setEditingActivityId(activityId);
     setIsEditing(true);
   };
 
-  const editActivity = () => {
+  const editActivity = async () => {
     if (newActivityName && editingActivityId) {
-      updateActivities(activities.map(activity => {
-        if (activity.id === editingActivityId) {
-          return { ...activity, name: newActivityName };
-        }
-        return activity;
-      }));
-      setNewActivityName('');
-      setIsEditing(false);
-      setEditingActivityId(null);
+      try {
+        const data = await activityService.updateActivity(editingActivityId, { name: newActivityName });
+        const updatedActivity = { ...activities.find(activity => activity.id === editingActivityId), name: newActivityName };
+  
+        updateActivities(activities.map(activity => (activity.id === editingActivityId ? updatedActivity : activity)));
+        setNewActivityName('');
+        setIsEditing(false);
+        setEditingActivityId(null);
+  
+        toast({
+          title: 'Activity updated.',
+          description: "Activity Updated Successfully.",
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      } catch (error) {
+        console.error('Error updating activity:', error.message);
+      }
+    }
+  };
+  
+  
+
+  const deleteActivity = async (activityId) => {
+    try {
+      await activityService.deleteActivity(activityId);
+      updateActivities(activities.filter(activity => activity.id !== activityId));
+  
       toast({
-        title: 'Activity updated.',
-        description: "We've updated the activity for you.",
-        status: 'success',
+        title: 'Activity deleted.',
+        description: "Activity Successfully deleted.",
+        status: 'info',
         duration: 2000,
         isClosable: true,
       });
+    } catch (error) {
+      console.error('Error deleting activity:', error.message);
     }
   };
-
-  const deleteActivity = (activityId) => {
-    updateActivities(activities.filter((activity) => activity.id !== activityId));
-    toast({
-      title: 'Activity deleted.',
-      description: "We've deleted the activity for you.",
-      status: 'info',
-      duration: 2000,
-      isClosable: true,
-    });
-  };
+  
 
   const onOpenDeleteDialog = (activityId) => {
     setEditingActivityId(activityId);
@@ -102,14 +116,30 @@ const Activities = () => {
     setIsDeleteDialogOpen(false);
   };
 
-  const confirmDeleteActivity = () => {
-    deleteActivity(editingActivityId);
-    onCloseDeleteDialog();
+  const confirmDeleteActivity = async () => {
+    try {
+      await activityService.deleteActivity(editingActivityId);
+      onCloseDeleteDialog();
+      updateActivities(activities.filter(activity => activity.id !== editingActivityId));
+      toast({
+        title: 'Activity deleted.',
+        description: "Activity Successfully deleted.",
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error('Error deleting activity:', error.message);
+    }
   };
 
   const filteredActivities = searchQuery
-    ? activities.filter(activity => activity.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : activities.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage);
+  ? activities.filter(activity => {
+      const title = activity.title.rendered || ''; // Default to an empty string if title.rendered is undefined
+      return title.toLowerCase().includes(searchQuery.toLowerCase());
+    })
+  : activities.slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage);
+
 
   const totalPages = Math.ceil(activities.length / recordsPerPage);
 
@@ -133,12 +163,12 @@ const Activities = () => {
         </InputGroup>
 
         <InputGroup size="md">
-          <Input
-            value={newActivityName}
-            onChange={(e) => setNewActivityName(e.target.value)}
-            placeholder={isEditing ? "Edit activity name" : "New activity name"}
-            pr="4.5rem"
-          />
+        <Input
+              value={newActivityName || ''}  // Ensure it's not undefined
+              onChange={(e) => setNewActivityName(e.target.value)}
+              placeholder={isEditing ? "Edit activity name" : "New activity name"}
+              pr="4.5rem"
+            />
           <InputRightElement width="4.5rem">
             <Tooltip label={isEditing ? "Confirm Edit" : "Add Activity"}>
               <IconButton
@@ -152,6 +182,12 @@ const Activities = () => {
         </InputGroup>
       </Flex>
 
+      {isLoading ? ( // Show loading spinner when fetching data
+        <Flex justifyContent="center" alignItems="center" height="300px">
+          <Spinner size="xl" />
+        </Flex>
+      ) : (
+
       <Table variant="simple">
         <Thead>
           <Tr>
@@ -164,7 +200,7 @@ const Activities = () => {
           {filteredActivities.map((activity) => (
             <Tr key={activity.id}>
               <Td>{activity.id}</Td>
-              <Td>{activity.name}</Td>
+              <Td>{activity.title.rendered}</Td>
               <Td>
                 <IconButton aria-label="Edit activity" icon={<EditIcon />} onClick={() => startEditActivity(activity.id)} />
                 <IconButton aria-label="Delete activity" icon={<DeleteIcon />} onClick={() => onOpenDeleteDialog(activity.id)} ml={2} />
@@ -173,7 +209,7 @@ const Activities = () => {
           ))}
         </Tbody>
       </Table>
-
+     )}
       <Flex justifyContent="center" mt="4">
         <Stack direction="row" spacing={4}>
           <IconButton icon={<ArrowBackIcon />} onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))} isDisabled={currentPage === 1} />
@@ -207,6 +243,7 @@ const Activities = () => {
         </AlertDialogOverlay>
       </AlertDialog>
     </Box>
+
   );
 };
 

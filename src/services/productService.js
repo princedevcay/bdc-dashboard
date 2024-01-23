@@ -8,7 +8,7 @@ import { Cookies } from 'react-cookie';
 const cookies = new Cookies();
 
 // Utility function to get the authentication token
-const getToken = () => {
+export const getToken = () => {
   const token = cookies.get('isAuthenticated') || '';
   if (!token) {
     throw new Error('Authentication token is missing.');
@@ -131,4 +131,3 @@ export const fetchLogEntries = async () => {
     throw error;
   }
 };
-

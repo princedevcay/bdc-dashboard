@@ -1,26 +1,49 @@
-import { useEffect, useState } from 'react';
-import { fetchActivities } from '../../services/activityService';
+import React, { useEffect, useState } from 'react';
+import { fetchAllActivityLogs } from '../../services/activitylogsService';
 
 const TotalActivitiesReport = () => {
-  const [totalActivities, setTotalActivities] = useState(0);
+  const [activityLogs, setActivityLogs] = useState([]);
 
   useEffect(() => {
-    const fetchTotalActivities = async () => {
+    const fetchActivityLogs = async () => {
       try {
-        const activitiesData = await fetchActivities();
-        setTotalActivities(activitiesData.length);
+        const logsData = await fetchAllActivityLogs();
+        setActivityLogs(logsData);
       } catch (error) {
-        console.error('Error fetching total activities:', error);
+        console.error('Error fetching activity logs:', error);
       }
     };
 
-    fetchTotalActivities();
+    fetchActivityLogs();
   }, []);
 
   return (
     <div>
       <h2>Total Activities Report</h2>
-      <p>Total Activities: {totalActivities}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            {/* Add more fields based on your activity log structure */}
+            <th>Timestamp</th>
+            <th>Author</th>
+            {/* Add more fields based on your activity log structure */}
+          </tr>
+        </thead>
+        <tbody>
+          {activityLogs.map((log) => (
+            <tr key={log.id}>
+              <td>{log.id}</td>
+              <td>{log.title}</td>
+              {/* Add more fields based on your activity log structure */}
+              <td>{log.timestamp}</td>
+              <td>{log.author}</td>
+              {/* Add more fields based on your activity log structure */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

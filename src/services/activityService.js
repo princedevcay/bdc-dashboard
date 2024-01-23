@@ -2,24 +2,53 @@
 // activityService.js
 
 import api from "../api"; // Import the axios instance with the base URL
+import { getToken } from './productService';
 import { Cookies } from 'react-cookie';
 
-const cookies = new Cookies();
+const cookies = new Cookies(); // Create a new instance of Cookies
 
 // Create a new activity
-export const createActivity = async (newActivity) => {
+export const createActivity = async (activityData) => {
   try {
-    const response = await api.post('/activity', newActivity);
-    return response.data;
+    const token = getToken(); // Get the authentication token
+
+    if (!token) {
+      throw new Error('Authentication token is missing.'); // Throw an error if the token is missing
+    }
+
+    // Include 'status' and 'title' in the request payload
+    const payload = {
+      status: 'publish',
+      title: activityData.name, // Assuming 'name' is the field you want to use as the title
+      // ... (other fields if needed)
+    };
+
+    const response = await api.post('/activity', payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    // Extract the title from the API response
+    const createdActivity = response.data;
+    const createdTitle = createdActivity.title.rendered;
+
+    // Update the title in the activity object
+    return {
+      ...createdActivity,
+      title: createdTitle,
+    };
   } catch (error) {
-    throw error;
+    console.error('Error creating activity:', error.message);
+    throw error; // Re-throw the error for further handling in the calling code
   }
 };
 
 // Fetch all activities
 export const fetchActivities = async () => {
   try {
-    const response = await api.get('/activity');
+    const response = await api.get('/activity'); 
     return response.data;
   } catch (error) {
     throw error;
@@ -37,26 +66,62 @@ export const fetchActivityById = async (activityId) => {
 };
 
 // Update an existing activity
-export const updateActivity = async (activityId, updatedActivity) => {
+export const updateActivity = async (activityId, activityData) => {
   try {
-    const response = await api.put(`/activity/${activityId}`, updatedActivity);
-    return response.data;
+    const token = getToken(); // Get the authentication token
+
+    if (!token) {
+      throw new Error('Authentication token is missing.'); // Throw an error if the token is missing
+    }
+
+    // Include 'status' and 'title' in the request payload
+    const payload = {
+      status: 'publish',
+      title: activityData.name, // Assuming 'name' is the field you want to use as the title
+      // ... (other fields if needed)
+    };
+
+    const response = await api.post(`/activity/${activityId}`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    // Extract the title from the API response
+    const updatedActivity = response.data;
+    const updatedTitle = updatedActivity.title.rendered;
+
+    // Update the title in the activity object
+    return {
+      ...updatedActivity,
+      title: updatedTitle,
+    };
   } catch (error) {
-    throw error;
+    console.error('Error updating activity:', error.message);
+    throw error; // Re-throw the error for further handling in the calling code
   }
 };
 
 // Delete an activity by ID
 export const deleteActivity = async (activityId) => {
   try {
-    const token = cookies.get('isAuthenticated'); // Replace with your actual cookie name
-    const response = await api.delete(`/activity/${activityId}`, {
+    const token = getToken(); // Get the authentication token
+
+    if (!token) {
+      throw new Error('Authentication token is missing.'); // Throw an error if the token is missing
+    }
+
+    await api.delete(`/activity/${activityId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data;
+
+    return activityId; // Return the deleted activity ID
+
   } catch (error) {
-    throw error;
+    console.error('Error deleting activity:', error.message);
+    throw error; // Re-throw the error for further handling in the calling code
   }
 };
