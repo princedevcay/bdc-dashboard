@@ -9,21 +9,20 @@ import { fetchActivities } from '../../services/activityService';
 import { fetchBDCCompanies } from '../../services/bdcService';
 import { fetchDepots } from '../../services/depotService';
 
-const LogsPage = () => {
-  const currentUser = "John Doe";
+const LogsPage = ({ user }) => {
   const [fetchedProducts, setFetchedProducts] = useState([]);
   const [fetchedActivities, setFetchedActivities] = useState([]);
   const [fetchedBDCCompanies, setFetchedBDCCompanies] = useState([]);
   const [fetchedDepots, setFetchedDepots] = useState([]);
-  const [loadingActivities, setLoadingActivities] = useState(false); // Updated
-  const [loadingLogs, setLoadingLogs] = useState(false); // Added
+  const [loadingActivities, setLoadingActivities] = useState(false);
+  const [loadingLogs, setLoadingLogs] = useState(false);
   const [logEntries, setLogEntries] = useState([]);
   const toast = useToast();
 
   useEffect(() => {
     document.title = 'Activity Logs';
     return () => {
-      document.title = 'Tor Monitoring & Control System'; // Reset the title when the component unmounts
+      document.title = 'Tor Monitoring & Control System';
     };
   }, []);
 
@@ -39,7 +38,7 @@ const LogsPage = () => {
         setLoadingLogs(false);
       }
     };
-  
+
     fetchLogEntriesData();
   }, []);
 
@@ -58,7 +57,7 @@ const LogsPage = () => {
 
     const fetchBDCCompaniesData = async () => {
       try {
-        setLoadingBDCCompanies(true);
+        
         const bdcCompaniesData = await fetchBDCCompanies();
         setFetchedBDCCompanies(bdcCompaniesData);
       } catch (error) {
@@ -112,10 +111,8 @@ const LogsPage = () => {
     remarks: '',
     quantityGsv: '',
     quantityMt: '',
-    actionedBy: currentUser
+    actionedBy: user ? user.name : 'John Doe',
   });
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -159,7 +156,7 @@ const LogsPage = () => {
         remarks: '',
         quantityGsv: '',
         quantityMt: '',
-        actionedBy: currentUser,
+        actionedBy: user ? user.name : 'John Doe',
         author: '',
       });
 
@@ -294,45 +291,45 @@ const LogsPage = () => {
 
       {loadingLogs ? (
         <Flex justifyContent="center" alignItems="center" height="300px">
-        <Spinner size="lg" color="blue.500" />
+          <Spinner size="lg" color="blue.500" />
         </Flex>
       ) : (
         logEntries.length > 0 && (
-        <Table variant="simple" mt={8}>
-          <Thead>
-            <Tr bgColor="#0C4DA2" color="white">
-              <Th color="white" >Date/Time Stamp</Th>
-              <Th color="white">Product</Th>
-              <Th color="white">Activity</Th>
-              <Th color="white">From (BDC)</Th>
-              <Th color="white">In Depot</Th>
-              <Th color="white">To Depot</Th>
-              <Th color="white">At Depot</Th>
-              <Th color="white">Remarks</Th>
-              <Th color="white">Quantity (GSV)</Th>
-              <Th color="white">Quantity (MT)</Th>
-              <Th color="white">Actioned By</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {logEntries.map((log, index) => (
-              <Tr key={index}>
-                <Td>{log.acf && log.acf.timestamp}</Td>
-                <Td>{log.acf && log.acf.product}</Td>
-                <Td>{log.acf && log.acf.activity}</Td>
-                <Td>{log.acf && log.acf.from}</Td>
-                <Td>{log.acf && log.acf.inDepot}</Td>
-                <Td>{log.acf && log.acf.to}</Td>
-                <Td>{log.acf && log.acf.atDepot}</Td>
-                <Td>{log.acf && log.acf.remarks}</Td>
-                <Td>{log.acf && log.acf.quantityGsv}</Td>
-                <Td>{log.acf && log.acf.quantityMt}</Td>
-                <Td>Jesse Ayertey</Td>
+          <Table variant="simple" mt={8}>
+            <Thead>
+              <Tr bgColor="#0C4DA2" color="white">
+                <Th color="white" >Date/Time Stamp</Th>
+                <Th color="white">Product</Th>
+                <Th color="white">Activity</Th>
+                <Th color="white">From (BDC)</Th>
+                <Th color="white">In Depot</Th>
+                <Th color="white">To Depot</Th>
+                <Th color="white">At Depot</Th>
+                <Th color="white">Remarks</Th>
+                <Th color="white">Quantity (GSV)</Th>
+                <Th color="white">Quantity (MT)</Th>
+                <Th color="white">Actioned By</Th>
               </Tr>
-            ))}
-          </Tbody>
-        </Table>
-         )
+            </Thead>
+            <Tbody>
+              {logEntries.map((log, index) => (
+                <Tr key={index}>
+                  <Td>{log.acf && log.acf.timestamp}</Td>
+                  <Td>{log.acf && log.acf.product}</Td>
+                  <Td>{log.acf && log.acf.activity}</Td>
+                  <Td>{log.acf && log.acf.from}</Td>
+                  <Td>{log.acf && log.acf.inDepot}</Td>
+                  <Td>{log.acf && log.acf.to}</Td>
+                  <Td>{log.acf && log.acf.atDepot}</Td>
+                  <Td>{log.acf && log.acf.remarks}</Td>
+                  <Td>{log.acf && log.acf.quantityGsv}</Td>
+                  <Td>{log.acf && log.acf.quantityMt}</Td>
+                  <Td>{log.acf && log.acf.actionedBy}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        )
       )}
     </Box>
   );

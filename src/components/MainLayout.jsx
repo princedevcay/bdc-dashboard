@@ -49,6 +49,7 @@ const MainLayout = () => {
   const [isExpanded, setExpanded] = useState(true);
   const [user, setUser] = useState(null); // State to store user information
   const [cookies] = useCookies(['isAuthenticated']);
+  
 
   const toggleDrawerSize = () => {
     setExpanded(!isExpanded);
@@ -74,6 +75,8 @@ const MainLayout = () => {
       fetchUserData();
     }
   }, [cookies.isAuthenticated]);
+
+
   // Sidebar content array for mapping, including submenus
   const sidebarContent = [
     { icon: FiHome, name: 'Dashboard', path: '/dashboard' },
@@ -87,7 +90,7 @@ const MainLayout = () => {
         { name: 'Products', path: '/data-entry/products' },
       ],
     },
-    { icon: FiFileText, name: 'Logs', path: '/logs' },
+    { icon: FiFileText, name: 'Activity Logs', path: '/logs' },
     {
       icon: FiClipboard,
       name: 'Reports',
@@ -207,17 +210,17 @@ const MainLayout = () => {
         <Box as="main" p={4}>
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/data-entry/products" element={<ProductsPage />} />
-            <Route path="/data-entry/bdc-companies" element={<BDCCompanies />} />
-            <Route path="/data-entry/loading-rack-liftings" element={<LoadingRackLiftingsForm />} />
-            <Route path="/data-entry/imports" element={<ImportsPage />} />
-            <Route path="/data-entry/transfers" element={<TransferPage />} />
-            <Route path="logs" element={<LogsPage/>}/>
-            <Route path="/data-entry/activities" element={<Activities/>}/>
-            <Route path="/data-entry/depots" element={<DepotsPage/>}/>
-            <Route path="/reports/total-activities" element={<TotalActivitiesReport/>} />
-            <Route path="/reports/individual-activities" element={<IndividualActivitiesReport/>} />
-            <Route path="/reports/query-activity-details" element={<QueryActivityDetails/>} />
+            <Route path="/data-entry/products" element={<ProductsPage user={user} />} />
+            <Route path="/data-entry/bdc-companies" element={<BDCCompanies user={user} />} />
+            <Route path="/data-entry/loading-rack-liftings" element={<LoadingRackLiftingsForm user={user} />} />
+            <Route path="/data-entry/imports" element={<ImportsPage user={user} />} />
+            <Route path="/data-entry/transfers" element={<TransferPage user={user} />} />
+            <Route path="logs" element={<LogsPage user={user}/>}/>
+            <Route path="/data-entry/activities" element={<Activities user={user}/>}/>
+            <Route path="/data-entry/depots" element={<DepotsPage user={user}/>}/>
+            <Route path="/reports/total-activities" element={<TotalActivitiesReport user={user}/>} />
+            <Route path="/reports/individual-activities" element={<IndividualActivitiesReport user={user}/>} />
+            <Route path="/reports/query-activity-details" element={<QueryActivityDetails user={user}/>} />
  
             {/* Add additional routes here */}
           </Routes>
