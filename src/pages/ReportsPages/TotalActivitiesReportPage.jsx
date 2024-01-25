@@ -3,7 +3,6 @@ import TotalActivitiesReport from '../../components/Reports/TotalActivitiesRepor
 const TotalActivitiesReportPage = () => {
   return (
     <div>
-      <h1>Total Activities Report Page</h1>
       <TotalActivitiesReport />
     </div>
   );

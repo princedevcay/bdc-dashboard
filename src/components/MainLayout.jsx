@@ -37,9 +37,9 @@ import TransferPage from './TransferPage';
 import LogsPage from './DateEntries/LogsPage';
 import Activities from './DateEntries/Activities';
 import DepotsPage from './DateEntries/DepotsPage';
-import IndividualActivitiesReport from '../pages/ReportsPages/IndividualActivitiesReportPage'
+
 import TotalActivitiesReport from '../pages/ReportsPages/TotalActivitiesReportPage'
-import QueryActivityDetails from '../pages/ReportsPages/QueryActivityDetailsPage'
+
 
 
 const MainLayout = () => {
@@ -65,15 +65,7 @@ const MainLayout = () => {
       ],
     },
     { icon: FiFileText, name: 'Logs', path: '/logs' },
-    {
-      icon: FiClipboard,
-      name: 'Reports',
-      children: [
-        { name: 'Total Activities', path: '/reports/total-activities' },
-        { name: 'Individual Activities', path: '/reports/individual-activities' },
-        { name: 'Activity Details', path: '/reports/query-activity-details' },
-      ],
-    },
+    { icon: FiClipboard, name: 'Reports', path: '/reports/total-activities' },
   ];
 
   // Function to render sidebar items
@@ -81,7 +73,7 @@ const MainLayout = () => {
     return items.map((item, index) => (
       item.children ? (
         <Menu key={index}>
-          <MenuButton as={Button} color='white' w="100%" textAlign={"left"} variant="ghost"  leftIcon={<Icon as={item.icon} />} _hover={{ bg: 'gray.100', color: 'blue.500' }}>
+          <MenuButton className="print-hide" as={Button} color='white' w="100%" textAlign={"left"} variant="ghost"  leftIcon={<Icon as={item.icon}  />} _hover={{ bg: 'gray.100', color: 'blue.500' }}>
             {item.name}
           </MenuButton>
           <MenuList>
@@ -154,7 +146,7 @@ const MainLayout = () => {
 
       {/* Main Content and Header */}
       <Box flex="1" p={4}>
-        <Flex justify="space-between" align="center" mb={4}>
+        <Flex className="print-hide" justify="space-between" align="center" mb={4}>
           <IconButton
             aria-label="Open Menu"
             icon={<FiMenu />}
@@ -189,8 +181,7 @@ const MainLayout = () => {
             <Route path="/data-entry/activities" element={<Activities/>}/>
             <Route path="/data-entry/depots" element={<DepotsPage/>}/>
             <Route path="/reports/total-activities" element={<TotalActivitiesReport/>} />
-            <Route path="/reports/individual-activities" element={<IndividualActivitiesReport/>} />
-            <Route path="/reports/query-activity-details" element={<QueryActivityDetails/>} />
+
  
             {/* Add additional routes here */}
           </Routes>

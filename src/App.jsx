@@ -8,6 +8,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Footer from './components/Footer';
 import Hello from './components/Hello';
+import './App.css';
+
 
 function App() {
   const [cookies] = useCookies(['isAuthenticated']);

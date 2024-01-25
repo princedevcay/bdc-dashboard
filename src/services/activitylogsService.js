@@ -59,5 +59,17 @@ export const deleteActivityLog = async (logId) => {
   }
 };
 
+//Search Activity Logs
 
-
+export const searchActivityLogs = async (searchTerm) => {
+  try {
+    const response = await api.get('/activitylog', {
+      params: {
+        search: searchTerm,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
