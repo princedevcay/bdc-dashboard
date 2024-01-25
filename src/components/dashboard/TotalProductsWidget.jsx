@@ -21,16 +21,10 @@ const TotalProductsWidget = () => {
   }, []);
 
   return (
-    <Box>
-      <Heading size="md" my={2}>
-        Total Products
-      </Heading>
-      <Box mx={4} my={2}>
-        <Alert status="info">
-          Products: {totalProducts}
-        </Alert>
-      </Box>
-    </Box>
+    <Box p={4} borderWidth="1px" borderRadius="lg">
+     <Heading size="md">TOTAL PRODUCTS</Heading>
+     <Heading size="xl">{totalProducts}</Heading>
+   </Box>
   );
 };
 

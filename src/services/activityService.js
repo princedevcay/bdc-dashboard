@@ -125,3 +125,21 @@ export const deleteActivity = async (activityId) => {
     throw error; // Re-throw the error for further handling in the calling code
   }
 };
+
+
+// Fetch total count of DEPOT TRANSFER OUT
+export const fetchDepotTransferOutCount = async () => {
+  try {
+    const response = await api.get('/activity', {
+      params: {
+        // Add any additional parameters to filter by DEPOT TRANSFER OUT
+        activity: 'DEPOT TRANSFER OUT',
+      },
+    });
+
+    // Return the total count
+    return response.data.length;
+  } catch (error) {
+    throw error;
+  }
+};

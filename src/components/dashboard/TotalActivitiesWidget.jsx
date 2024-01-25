@@ -21,17 +21,10 @@ const TotalActivitiesWidget = () => {
   }, []);
 
   return (
-    <Box>
-      <Heading size="md" my={2}>
-        Total Activity Logs
-      </Heading>
-      <Box mx={4} my={2}>
-        <Alert status="info">
-          <AlertIcon />
-          Total: {totalActivities}
-        </Alert>
-      </Box>
-    </Box>
+     <Box p={4} borderWidth="1px" borderRadius="lg">
+     <Heading size="md">TOTAL ACTIVITY LOGS</Heading>
+     <Heading size="xl">{totalActivities}</Heading>
+   </Box>
   );
 };
 
