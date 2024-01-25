@@ -24,6 +24,13 @@ const ProductsPage = () => {
 
   const recordsPerPage = 10;
 
+  useEffect(() => {
+    document.title = 'Products';
+    return () => {
+      document.title = 'Tor Monitoring & Control System'; // Reset the title when the component unmounts
+    };
+  }, []);
+
   // Fetch products from the API when the component mounts
   const fetchProductsData = async () => {
     try {

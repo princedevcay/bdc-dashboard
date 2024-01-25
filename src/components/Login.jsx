@@ -29,6 +29,7 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const toast = useToast();
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
     let valid = true;
@@ -49,6 +50,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     if (!validate()) {
       toast({
         title: 'Invalid Input',
@@ -59,10 +61,10 @@ const Login = () => {
       });
       return;
     }
-  
+
     try {
-      console.log('Sending POST request to /wp-json/jwt-auth/v1/token...');
-  
+      setLoading(true);
+
       // Send a POST request to your authentication API
       const response = await fetch('https://africanloomtours.com/wp-json/jwt-auth/v1/token', {
         method: 'POST',
@@ -71,16 +73,20 @@ const Login = () => {
         },
         body: JSON.stringify({ username, password }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        console.log('JWT Token received:', data.token);
-        // Authentication successful, you can store the user token or session here
-        // Redirect to the dashboard or another route
         setCookie('isAuthenticated', data.token, { path: '/' });
         navigate('/dashboard');
+
+        toast({
+          title: 'Login Successful',
+          description: 'Welcome back!',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
       } else {
-        // Authentication failed, handle error and display an error message
         console.error('Login Error:', response.statusText);
         toast({
           title: 'Login Error',
@@ -91,7 +97,6 @@ const Login = () => {
         });
       }
     } catch (error) {
-      // Handle other errors
       console.error('Login Error:', error);
       toast({
         title: 'Login Error',
@@ -100,16 +105,16 @@ const Login = () => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
     }
   };
-  
 
   return (
     <Flex align="center" justify="center" minHeight="100vh" bg={useColorModeValue('gray.50', 'gray.800')}>
       <Box as="form" onSubmit={handleLogin} p={8} maxWidth="600px" borderWidth={1} borderRadius={8} boxShadow="lg" bg={useColorModeValue('white', 'gray.700')}>
         <VStack spacing={4} align="flex-start" w="full">
           <Flex width="full" justify="center">
-            {/* Center the image */}
             <Image src="/logo.png" alt="TOR Logo" boxSize="100px" objectFit="contain" />
           </Flex>
           <Heading as="h2" size="lg">
@@ -132,7 +137,7 @@ const Login = () => {
             </InputGroup>
             {errors.password && <Text color="red.500" fontSize="sm">{errors.password}</Text>}
           </FormControl>
-          <Button width="full" mt={4} colorScheme="blue" type="submit">
+          <Button width="full" mt={4} colorScheme="blue" type="submit" isLoading={loading}>
             Login
           </Button>
           <Flex justifyContent="space-between" width="full" mt={4}>

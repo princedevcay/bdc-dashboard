@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import  { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-
+import { useCookies } from 'react-cookie';
+import api from '../api';
 import {
   Box,
   Flex,
@@ -37,20 +38,42 @@ import TransferPage from './TransferPage';
 import LogsPage from './DateEntries/LogsPage';
 import Activities from './DateEntries/Activities';
 import DepotsPage from './DateEntries/DepotsPage';
-
+import IndividualActivitiesReport from '../pages/ReportsPages/IndividualActivitiesReportPage'
 import TotalActivitiesReport from '../pages/ReportsPages/TotalActivitiesReportPage'
-
+import QueryActivityDetails from '../pages/ReportsPages/QueryActivityDetailsPage'
 
 
 const MainLayout = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
   const [isExpanded, setExpanded] = useState(true);
+  const [user, setUser] = useState(null); // State to store user information
+  const [cookies] = useCookies(['isAuthenticated']);
 
   const toggleDrawerSize = () => {
     setExpanded(!isExpanded);
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = cookies.isAuthenticated;
+        const response = await api.get('/users/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUser(response.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    if (cookies.isAuthenticated) {
+      fetchUserData();
+    }
+  }, [cookies.isAuthenticated]);
   // Sidebar content array for mapping, including submenus
   const sidebarContent = [
     { icon: FiHome, name: 'Dashboard', path: '/dashboard' },
@@ -64,8 +87,16 @@ const MainLayout = () => {
         { name: 'Products', path: '/data-entry/products' },
       ],
     },
-    { icon: FiFileText, name: 'Activity Logs', path: '/logs' },
-    { icon: FiClipboard, name: 'Reports', path: '/reports/total-activities' },
+    { icon: FiFileText, name: 'Logs', path: '/logs' },
+    {
+      icon: FiClipboard,
+      name: 'Reports',
+      children: [
+        { name: 'Total Activities', path: '/reports/total-activities' },
+        { name: 'Individual Activities', path: '/reports/individual-activities' },
+        { name: 'Activity Details', path: '/reports/query-activity-details' },
+      ],
+    },
   ];
 
   // Function to render sidebar items
@@ -73,7 +104,7 @@ const MainLayout = () => {
     return items.map((item, index) => (
       item.children ? (
         <Menu key={index}>
-          <MenuButton className="print-hide" as={Button} color='white' w="100%" textAlign={"left"} variant="ghost"  leftIcon={<Icon as={item.icon}  />} _hover={{ bg: 'gray.100', color: 'blue.500' }}>
+          <MenuButton as={Button} color='white' w="100%" textAlign={"left"} variant="ghost"  leftIcon={<Icon as={item.icon} />} _hover={{ bg: 'gray.100', color: 'blue.500' }}>
             {item.name}
           </MenuButton>
           <MenuList>
@@ -146,7 +177,7 @@ const MainLayout = () => {
 
       {/* Main Content and Header */}
       <Box flex="1" p={4}>
-        <Flex className="print-hide" justify="space-between" align="center" mb={4}>
+        <Flex justify="space-between" align="center" mb={4}>
           <IconButton
             aria-label="Open Menu"
             icon={<FiMenu />}
@@ -158,8 +189,12 @@ const MainLayout = () => {
           <Box flex="1" />
           <AlertsWidget />
           <Menu>
-            <MenuButton as={Button} colorScheme="teal" rounded="full" variant="link" cursor="pointer" minW={0} ml={5}>
-              <Avatar size="sm" name="User Name" src="/path/to/profile/image.jpg" />
+          <MenuButton as={Button} colorScheme="teal" rounded="full" variant="link" cursor="pointer" minW={0} ml={5}>
+              {user ? (
+                <Avatar size="sm" name={user.name} src={user.avatar_urls[48]} />
+              ) : (
+                <Avatar size="sm" name="User" />
+              )}
             </MenuButton>
             <MenuList>
               <MenuItem icon={<FiUser />}>My Profile</MenuItem>
@@ -181,7 +216,8 @@ const MainLayout = () => {
             <Route path="/data-entry/activities" element={<Activities/>}/>
             <Route path="/data-entry/depots" element={<DepotsPage/>}/>
             <Route path="/reports/total-activities" element={<TotalActivitiesReport/>} />
-
+            <Route path="/reports/individual-activities" element={<IndividualActivitiesReport/>} />
+            <Route path="/reports/query-activity-details" element={<QueryActivityDetails/>} />
  
             {/* Add additional routes here */}
           </Routes>

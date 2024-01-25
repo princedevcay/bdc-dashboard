@@ -21,11 +21,17 @@ const LogsPage = () => {
   const toast = useToast();
 
   useEffect(() => {
+    document.title = 'Activity Logs';
+    return () => {
+      document.title = 'Tor Monitoring & Control System'; // Reset the title when the component unmounts
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchLogEntriesData = async () => {
       try {
         setLoadingLogs(true);
         const logEntriesData = await fetchLogEntries();
-        console.log('Log Entries Data:', logEntriesData); // Add this line
         setLogEntries(logEntriesData);
       } catch (error) {
         console.error('Error fetching log entries:', error);

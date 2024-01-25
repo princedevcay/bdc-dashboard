@@ -24,6 +24,14 @@ const Activities = () => {
   const recordsPerPage = 10;
 
   useEffect(() => {
+    document.title = 'Activities';
+    return () => {
+      document.title = 'Tor Monitoring & Control System'; // Reset the title when the component unmounts
+    };
+  }, []);
+
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await activityService.fetchActivities();

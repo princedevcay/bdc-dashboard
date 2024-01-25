@@ -22,6 +22,13 @@ const BDCCompanies = () => {
   const recordsPerPage = 10;
 
   useEffect(() => {
+    document.title = 'BDC Companies';
+    return () => {
+      document.title = 'Tor Monitoring & Control System'; // Reset the title when the component unmounts
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await bdcService.fetchBDCCompanies();

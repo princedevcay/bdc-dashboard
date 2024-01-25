@@ -21,6 +21,13 @@ const DepotsPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
+    document.title = 'Depots';
+    return () => {
+      document.title = 'Tor Monitoring & Control System'; // Reset the title when the component unmounts
+    };
+  }, []);
+
+  useEffect(() => {
     fetchDepotsFromApi();
   }, []);
 
