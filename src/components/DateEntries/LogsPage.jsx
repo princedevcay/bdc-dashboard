@@ -38,64 +38,51 @@ const LogsPage = ({ user }) => {
         setLoadingLogs(false);
       }
     };
-
-    fetchLogEntriesData();
-  }, []);
-
-  useEffect(() => {
+  
     const fetchProductsData = async () => {
       try {
-        setLoadingProducts(true);
         const productsData = await fetchProducts();
         setFetchedProducts(productsData);
       } catch (error) {
         console.error('Error fetching products:', error);
-      } finally {
-        setLoadingProducts(false);
       }
     };
-
+  
     const fetchBDCCompaniesData = async () => {
       try {
-        
         const bdcCompaniesData = await fetchBDCCompanies();
         setFetchedBDCCompanies(bdcCompaniesData);
       } catch (error) {
         console.error('Error fetching BDC companies:', error);
-      } finally {
-        setLoadingBDCCompanies(false);
       }
     };
-
+  
     const fetchDepotsData = async () => {
       try {
-        setLoadingDepots(true);
         const depotsData = await fetchDepots();
         setFetchedDepots(depotsData);
       } catch (error) {
         console.error('Error fetching depots:', error);
-      } finally {
-        setLoadingDepots(false);
       }
     };
-
+  
     const fetchActivitiesData = async () => {
       try {
-        setLoadingActivities(true);
         const activitiesData = await fetchActivities();
         setFetchedActivities(activitiesData);
       } catch (error) {
         console.error('Error fetching activities:', error);
-      } finally {
-        setLoadingActivities(false);
       }
     };
-
+  
+    fetchLogEntriesData();
     fetchProductsData();
     fetchBDCCompaniesData();
     fetchDepotsData();
     fetchActivitiesData();
   }, []);
+  
+  
 
   const [logEntry, setLogEntry] = useState({
     title: "Your Log Entry Title",
@@ -121,7 +108,7 @@ const LogsPage = ({ user }) => {
 
   const handleSubmit = async () => {
     const timestamp = new Date().toLocaleString();
-    const logData = {
+    const updatedLogEntry = {
       ...logEntry,
       acf: {
         ...logEntry.acf,
@@ -138,10 +125,12 @@ const LogsPage = ({ user }) => {
         actionedBy: logEntry.actionedBy,
       },
     };
-
+  
+    console.log('Name displayed:', updatedLogEntry.acf.actionedBy);
+  
     try {
-      await saveLog(logData);
-      setLogEntries([...logEntries, logData]);
+      await saveLog(updatedLogEntry);
+      setLogEntries([...logEntries, updatedLogEntry]);
       setLogEntry({
         title: "Your Log Entry Title",
         content: "Additional content or description",
@@ -159,7 +148,7 @@ const LogsPage = ({ user }) => {
         actionedBy: user ? user.name : 'John Doe',
         author: '',
       });
-
+  
       toast({
         title: 'Log Entry Saved',
         description: 'Your log entry has been saved successfully.',
@@ -169,7 +158,7 @@ const LogsPage = ({ user }) => {
       });
     } catch (error) {
       console.error('Error saving log:', error);
-
+  
       toast({
         title: 'Error Saving Log Entry',
         description: 'An error occurred while saving the log entry.',
@@ -179,7 +168,7 @@ const LogsPage = ({ user }) => {
       });
     }
   };
-
+  
   return (
     <Box p={4} mb={10}>
       <Grid
