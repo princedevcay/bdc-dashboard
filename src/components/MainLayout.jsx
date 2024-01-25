@@ -64,7 +64,7 @@ const MainLayout = () => {
         { name: 'Products', path: '/data-entry/products' },
       ],
     },
-    { icon: FiFileText, name: 'Logs', path: '/logs' },
+    { icon: FiFileText, name: 'Activity Logs', path: '/logs' },
     { icon: FiClipboard, name: 'Reports', path: '/reports/total-activities' },
   ];
 
