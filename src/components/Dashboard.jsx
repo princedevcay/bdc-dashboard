@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { SimpleGrid, Heading } from '@chakra-ui/react';
 import TotalActivitiesWidget from './dashboard/TotalActivitiesWidget';
 import TotalProductsWidget from './dashboard/TotalProductsWidget';
 import DepotTransferOutWidget from './dashboard/DepotTransferOutWidget';
+import RemindersWidget from './dashboard/ReminderWidget';
 import { useCookies } from 'react-cookie';
 import api from '../api';
 
@@ -34,7 +36,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
-  }, [cookies.isAuthenticated]);
+  }, [cookies.isAuthenticated, fetchData]);
 
   useEffect(() => {
     // Set the document title when the component mounts
@@ -49,7 +51,8 @@ const Dashboard = () => {
   return (
     <>
       <Heading size="lg" mb={4} pl={3} color={"blue.500"}>{`Welcome back, ${username || 'UserName'}!`}</Heading>
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={5} p={5} mb={10}>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5} p={5} mb={10}>
+        <RemindersWidget/>
         <TotalActivitiesWidget />
         <TotalProductsWidget />
         <DepotTransferOutWidget />
