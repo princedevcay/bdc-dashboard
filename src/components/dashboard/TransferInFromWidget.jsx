@@ -19,7 +19,7 @@ const TransferInFromWidget = () => {
   ];
 
   return (
-    <Box border="1px" borderColor="gray.200" p={4} borderRadius="md">
+    <Box p={4} borderWidth="1px" borderRadius="lg" bg="white" shadow="md">
       <Heading size="md" bg="yellow.100" p={2}>TRANSFER IN FROM</Heading>
       <List spacing={2}>
         {companies.map((company, index) => (

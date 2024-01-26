@@ -21,7 +21,7 @@ const TotalProductsWidget = () => {
   }, []);
 
   return (
-    <Box p={4} borderWidth="1px" borderRadius="lg">
+    <Box p={4} borderWidth="1px" borderRadius="lg" bg="white" shadow="md">
      <Heading size="md">TOTAL PRODUCTS</Heading>
      <Heading size="xl">{totalProducts}</Heading>
    </Box>

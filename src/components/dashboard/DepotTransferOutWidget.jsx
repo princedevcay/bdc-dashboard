@@ -21,7 +21,7 @@ const DepotTransferOutWidget = () => {
   }, []);
 
   return (
-    <Box p={4} borderWidth="1px" borderRadius="lg">
+    <Box p={4} borderWidth="1px" borderRadius="lg" bg="white" shadow="md">
       <Heading size="md">TOTAL DEPOT TRANSFER OUT</Heading>
       <Heading size="xl">{depotTransferOutCount}</Heading>
     </Box>

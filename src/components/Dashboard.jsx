@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SimpleGrid, Heading } from '@chakra-ui/react';
 import TotalActivitiesWidget from './dashboard/TotalActivitiesWidget';
 import TotalProductsWidget from './dashboard/TotalProductsWidget';

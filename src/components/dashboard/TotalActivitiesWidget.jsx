@@ -21,7 +21,7 @@ const TotalActivitiesWidget = () => {
   }, []);
 
   return (
-     <Box p={4} borderWidth="1px" borderRadius="lg">
+    <Box p={4} borderWidth="1px" borderRadius="lg" bg="white" shadow="md">
      <Heading size="md">TOTAL ACTIVITY LOGS</Heading>
      <Heading size="xl">{totalActivities}</Heading>
    </Box>
