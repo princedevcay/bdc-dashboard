@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
-  Box, Button, Table, Thead, Tbody, Tr, Th, Td, Select, VStack, Input, Grid, GridItem, useToast, Spinner, Flex
+  Box, Button, Table, Thead, Tbody, Tr, Th, Td, Select, VStack, Input, Grid, GridItem, useToast, Text, Spinner, Flex
 } from '@chakra-ui/react';
 
 import { saveLog, fetchLogEntries } from '../../services/productService';
@@ -172,6 +172,9 @@ const LogsPage = ({ user }) => {
 
   return (
     <Box p={4} mb={10}>
+       <Text mb={4} fontWeight={"bold"}>
+        Add or upload log entries using the form below. You can also upload data from an Excel sheet.
+      </Text>
       <Grid
         templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }}
         gap={6}
