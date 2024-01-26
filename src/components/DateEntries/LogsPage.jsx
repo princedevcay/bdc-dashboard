@@ -15,6 +15,7 @@ const LogsPage = ({ user }) => {
   const [fetchedBDCCompanies, setFetchedBDCCompanies] = useState([]);
   const [fetchedDepots, setFetchedDepots] = useState([]);
   const [loadingActivities, setLoadingActivities] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [loadingLogs, setLoadingLogs] = useState(false);
   const [logEntries, setLogEntries] = useState([]);
   const toast = useToast();
@@ -38,7 +39,7 @@ const LogsPage = ({ user }) => {
         setLoadingLogs(false);
       }
     };
-  
+
     const fetchProductsData = async () => {
       try {
         const productsData = await fetchProducts();
@@ -47,7 +48,7 @@ const LogsPage = ({ user }) => {
         console.error('Error fetching products:', error);
       }
     };
-  
+
     const fetchBDCCompaniesData = async () => {
       try {
         const bdcCompaniesData = await fetchBDCCompanies();
@@ -56,7 +57,7 @@ const LogsPage = ({ user }) => {
         console.error('Error fetching BDC companies:', error);
       }
     };
-  
+
     const fetchDepotsData = async () => {
       try {
         const depotsData = await fetchDepots();
@@ -65,7 +66,7 @@ const LogsPage = ({ user }) => {
         console.error('Error fetching depots:', error);
       }
     };
-  
+
     const fetchActivitiesData = async () => {
       try {
         const activitiesData = await fetchActivities();
@@ -74,15 +75,13 @@ const LogsPage = ({ user }) => {
         console.error('Error fetching activities:', error);
       }
     };
-  
+
     fetchLogEntriesData();
     fetchProductsData();
     fetchBDCCompaniesData();
     fetchDepotsData();
     fetchActivitiesData();
   }, []);
-  
-  
 
   const [logEntry, setLogEntry] = useState({
     title: "Your Log Entry Title",
@@ -107,6 +106,8 @@ const LogsPage = ({ user }) => {
   };
 
   const handleSubmit = async () => {
+    setLoadingSubmit(true);
+
     const timestamp = new Date().toLocaleString();
     const updatedLogEntry = {
       ...logEntry,
@@ -125,9 +126,7 @@ const LogsPage = ({ user }) => {
         actionedBy: logEntry.actionedBy,
       },
     };
-  
-    console.log('Name displayed:', updatedLogEntry.acf.actionedBy);
-  
+
     try {
       await saveLog(updatedLogEntry);
       setLogEntries([...logEntries, updatedLogEntry]);
@@ -148,7 +147,7 @@ const LogsPage = ({ user }) => {
         actionedBy: user ? user.name : 'John Doe',
         author: '',
       });
-  
+
       toast({
         title: 'Log Entry Saved',
         description: 'Your log entry has been saved successfully.',
@@ -158,7 +157,7 @@ const LogsPage = ({ user }) => {
       });
     } catch (error) {
       console.error('Error saving log:', error);
-  
+
       toast({
         title: 'Error Saving Log Entry',
         description: 'An error occurred while saving the log entry.',
@@ -166,9 +165,11 @@ const LogsPage = ({ user }) => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setLoadingSubmit(false);
     }
   };
-  
+
   return (
     <Box p={4} mb={10}>
       <Grid
@@ -271,8 +272,8 @@ const LogsPage = ({ user }) => {
               onChange={handleChange}
               placeholder="Quantity (MT)"
             />
-            <Button mt={4} onClick={handleSubmit} colorScheme='blue'>
-              Submit Log Entry
+            <Button mt={4} onClick={handleSubmit} colorScheme='blue' isLoading={loadingSubmit}>
+              {loadingSubmit ? 'Submitting...' : 'Submit Log Entry'}
             </Button>
           </VStack>
         </GridItem>

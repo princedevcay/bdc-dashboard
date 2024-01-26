@@ -166,6 +166,7 @@ const Activities = () => {
               aria-label="Search activity"
               icon={<SearchIcon />}
               h="1.75rem" size="sm"
+              variant="outline" colorScheme="blue"
             />
           </InputRightElement>
         </InputGroup>
@@ -184,6 +185,7 @@ const Activities = () => {
                 icon={isEditing ? <EditIcon /> : <AddIcon />}
                 h="1.75rem" size="sm"
                 onClick={isEditing ? editActivity : addActivity}
+                variant="outline" colorScheme="blue"
               />
             </Tooltip>
           </InputRightElement>
@@ -210,8 +212,8 @@ const Activities = () => {
               <Td>{activity.id}</Td>
               <Td>{activity.title.rendered}</Td>
               <Td>
-                <IconButton aria-label="Edit activity" icon={<EditIcon />} onClick={() => startEditActivity(activity.id)} />
-                <IconButton aria-label="Delete activity" icon={<DeleteIcon />} onClick={() => onOpenDeleteDialog(activity.id)} ml={2} />
+                <IconButton aria-label="Edit activity" icon={<EditIcon />} variant="outline" colorScheme="blue" onClick={() => startEditActivity(activity.id)} />
+                <IconButton aria-label="Delete activity" icon={<DeleteIcon />} variant="outline" colorScheme="red" onClick={() => onOpenDeleteDialog(activity.id)} ml={2} />
               </Td>
             </Tr>
           ))}
@@ -222,7 +224,7 @@ const Activities = () => {
         <Stack direction="row" spacing={4}>
           <IconButton icon={<ArrowBackIcon />} onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))} isDisabled={currentPage === 1} />
           {Array.from({ length: totalPages }, (_, i) => (
-            <Button key={i + 1} onClick={() => setCurrentPage(i + 1)} isActive={currentPage === i + 1}>
+            <Button key={i + 1} colorScheme="blue"  onClick={() => setCurrentPage(i + 1)} isActive={currentPage === i + 1}>
               {i + 1}
             </Button>
           ))}

@@ -170,6 +170,7 @@ const DepotsPage = () => {
             <IconButton
               aria-label="Search depots"
               icon={<SearchIcon />}
+              variant="outline" colorScheme="blue"
               h="1.75rem" size="sm"
             />
           </InputRightElement>
@@ -190,6 +191,7 @@ const DepotsPage = () => {
                 icon={isEditing ? <EditIcon /> : <AddIcon />}
                 h="1.75rem" size="sm"
                 onClick={isEditing ? editDepot : addDepot}
+                variant="outline" colorScheme="blue"
               />
             </Tooltip>
           </InputRightElement>
@@ -214,8 +216,8 @@ const DepotsPage = () => {
               <Td>{depot.id}</Td>
               <Td>{depot.title.rendered}</Td>
               <Td>
-                <IconButton aria-label="Edit depot" icon={<EditIcon />} onClick={() => startEditDepot(depot.id)} />
-                <IconButton aria-label="Delete depot" icon={<DeleteIcon />} onClick={() => onOpenDeleteDialog(depot.id)} ml={2} />
+                <IconButton aria-label="Edit depot" icon={<EditIcon />} variant="outline" colorScheme="blue" onClick={() => startEditDepot(depot.id)} />
+                <IconButton aria-label="Delete depot" icon={<DeleteIcon />} variant="outline" colorScheme="red" onClick={() => onOpenDeleteDialog(depot.id)} ml={2} />
               </Td>
             </Tr>
           ))}
@@ -227,7 +229,7 @@ const DepotsPage = () => {
         <Stack direction="row" spacing={4}>
           <IconButton icon={<ArrowBackIcon />} onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))} isDisabled={currentPage === 1} />
           {Array.from({ length: totalPages }, (_, i) => (
-            <Button key={i + 1} onClick={() => setCurrentPage(i + 1)} isActive={currentPage === i + 1}>
+            <Button key={i + 1} colorScheme="blue"  onClick={() => setCurrentPage(i + 1)} isActive={currentPage === i + 1}>
               {i + 1}
             </Button>
           ))}

@@ -171,6 +171,7 @@ const BDCCompanies = () => {
               aria-label="Search BDC Company"
               icon={<SearchIcon />}
               h="1.75rem" size="sm"
+              variant="outline" colorScheme="blue"
             />
           </InputRightElement>
         </InputGroup>
@@ -189,6 +190,7 @@ const BDCCompanies = () => {
                 icon={isEditing ? <EditIcon /> : <AddIcon />}
                 h="1.75rem" size="sm"
                 onClick={isEditing ? editBDCCompany : addBDCCompany}
+                variant="outline" colorScheme="blue"
               />
             </Tooltip>
           </InputRightElement>
@@ -214,8 +216,8 @@ const BDCCompanies = () => {
                 <Td>{bdc.id}</Td>
                 <Td>{bdc.title.rendered}</Td>
                 <Td>
-                  <IconButton aria-label="Edit BDC Company" icon={<EditIcon />} onClick={() => startEditBDCCompany(bdc.id)} />
-                  <IconButton aria-label="Delete BDC Company" icon={<DeleteIcon />} onClick={() => onOpenDeleteDialog(bdc.id)} ml={2} />
+                  <IconButton aria-label="Edit BDC Company" icon={<EditIcon />} variant="outline" colorScheme="blue" onClick={() => startEditBDCCompany(bdc.id)} />
+                  <IconButton aria-label="Delete BDC Company" icon={<DeleteIcon />} variant="outline" colorScheme="red" onClick={() => onOpenDeleteDialog(bdc.id)} ml={2} />
                 </Td>
               </Tr>
             ))}
@@ -226,7 +228,7 @@ const BDCCompanies = () => {
         <Stack direction="row" spacing={4}>
           <IconButton icon={<ArrowBackIcon />} onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))} isDisabled={currentPage === 1} />
           {Array.from({ length: totalPages }, (_, i) => (
-            <Button key={i + 1} onClick={() => setCurrentPage(i + 1)} isActive={currentPage === i + 1}>
+            <Button key={i + 1} colorScheme="blue"  onClick={() => setCurrentPage(i + 1)} isActive={currentPage === i + 1}>
               {i + 1}
             </Button>
           ))}

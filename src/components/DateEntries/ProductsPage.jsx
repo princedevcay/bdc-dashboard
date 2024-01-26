@@ -187,6 +187,7 @@ const ProductsPage = () => {
       <IconButton
         aria-label="Search products"
         icon={<SearchIcon />}
+        variant="outline" colorScheme="blue"
         h="1.75rem" size="sm"
       />
     </InputRightElement>
@@ -206,6 +207,7 @@ const ProductsPage = () => {
           aria-label={isEditing ? "Confirm edit" : "Add product"}
           icon={isEditing ? <EditIcon /> : <AddIcon />}
           h="1.75rem" size="sm"
+          variant="outline" colorScheme="blue"
           onClick={isEditing ? editProduct : addProduct}
         />
       </Tooltip>
@@ -238,11 +240,13 @@ const ProductsPage = () => {
                   <IconButton
                     aria-label="Edit product"
                     icon={<EditIcon />}
+                    variant="outline" colorScheme="blue"
                     onClick={() => setSelectedProductId(product.id)}
                   />
                   <IconButton
                     aria-label="Delete product"
                     icon={<DeleteIcon />}
+                    variant="outline" colorScheme="red"
                     onClick={() => onOpenDeleteDialog(product.id)}
                     ml={2}
                   />
@@ -266,6 +270,7 @@ const ProductsPage = () => {
               key={i + 1}
               onClick={() => setCurrentPage(i + 1)}
               isActive={currentPage === i + 1}
+              colorScheme="blue" 
             >
               {i + 1}
             </Button>
