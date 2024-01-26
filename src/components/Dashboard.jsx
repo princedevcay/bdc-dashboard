@@ -31,11 +31,7 @@ const Dashboard = () => {
     }
   };
 
-  const showPopupAlert = () => {
-    // Open the popup alert
-    onOpen();
-  };
-
+  
   useEffect(() => {
     fetchData();
   }, [cookies.isAuthenticated, fetchData]);
@@ -50,42 +46,18 @@ const Dashboard = () => {
     };
   }, []);
 
-  useEffect(() => {
-    // Show the popup alert on the first load
-    showPopupAlert();
-  }, []); // Empty dependency array means it runs only once when the component mounts
-
   return (
     <>
       <Heading size="lg" mb={4} pl={3} color={"blue.500"}>{`Welcome back, ${username || 'UserName'}!`}</Heading>
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5} p={5} mb={10}>
-        <RemindersWidget />
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={5} p={5} mb={10}>
         <TotalActivitiesWidget />
         <TotalProductsWidget />
         <DepotTransferOutWidget />
       </SimpleGrid>
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5} p={5} mb={10}>
+        <RemindersWidget />
+      </SimpleGrid>
 
-      {/* Popup Alerts Widget */}
-      <AlertDialog isOpen={isOpen} onClose={onClose}>
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Welcome to the Dashboard!
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              Thank you for logging in. Here's an important alert for you!
-              {/* Add your alert content here */}
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button colorScheme="blue" onClick={onClose} ml={3}>
-                Close
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
     </>
   );
 };

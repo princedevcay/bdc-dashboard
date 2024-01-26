@@ -1,7 +1,7 @@
 import  { useEffect, useState } from 'react';
-import { Box, Heading, Alert } from '@chakra-ui/react';
-import { FaShoppingBag } from 'react-icons/fa';
+import { Box, Heading, Icon, Flex} from '@chakra-ui/react';
 import { fetchProducts } from '../../services/productService';
+import { FiDroplet } from "react-icons/fi"
 
 const TotalProductsWidget = () => {
   const [totalProducts, setTotalProducts] = useState(0);
@@ -21,10 +21,16 @@ const TotalProductsWidget = () => {
   }, []);
 
   return (
-    <Box p={4} borderWidth="1px" borderRadius="lg" bg="white" shadow="md">
-     <Heading size="md">TOTAL PRODUCTS</Heading>
-     <Heading size="xl">{totalProducts}</Heading>
-   </Box>
+    <Box p={4} borderWidth="1px" borderRadius="lg" bg="white" shadow="md" w={"100%"} h={"94px"} bgColor={"#0C4DA2"}>
+      <Flex justifyContent="space-between" alignItems="center">
+      <Box>
+        <Heading size="sm" color={"white"}>TOTAL PRODUCTS</Heading>
+        <Heading size="lg" color={"white"}>{totalProducts}</Heading>
+      </Box>
+      <Icon bgColor={"white"} color={"#0C4DA2"} as={FiDroplet} p={2} boxSize={16} borderRadius={"2xl"} />
+    </Flex>
+  </Box>
+   
   );
 };
 
