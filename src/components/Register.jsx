@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Flex,
@@ -13,9 +13,16 @@ import {
   Text,
   useToast,
   Image,
+  InputGroup,
+  InputRightElement
 } from '@chakra-ui/react';
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+
+const AnimatedBox = motion(Box);
+const AnimatedInput = motion(Input);
+const AnimatedButton = motion(Button);
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -26,6 +33,14 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
+
+  const firstInputRef = useRef();
+
+  useEffect(() => {
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
 
   const updateErrorState = (field, message) => {
     setErrors((prevErrors) => {
@@ -77,12 +92,11 @@ const Register = () => {
     let success = false;
 
     try {
-      // Simulate asynchronous registration process (replace with your actual registration logic)
       setLoading(true);
       setTimeout(() => {
         if (validate()) {
           console.log('Registration details:', { username, email, password });
-          navigate('/dashboard'); // Redirect after successful registration
+          navigate('/dashboard');
           toast({
             title: 'Registration Successful',
             description: 'Welcome aboard!',
@@ -92,7 +106,7 @@ const Register = () => {
           });
           success = true;
         }
-      }, 2000); // Simulating a delay for demonstration purposes
+      }, 2000);
     } catch (error) {
       // Handle errors
     } finally {
@@ -112,7 +126,19 @@ const Register = () => {
 
   return (
     <Flex align="center" justify="center" minHeight="120vh" bg={useColorModeValue('gray.50', 'gray.800')}>
-      <Box as="form" onSubmit={handleRegister} p={8} maxWidth="600px" borderWidth={1} borderRadius={8} boxShadow="lg" bg={useColorModeValue('white', 'gray.700')}>
+      <AnimatedBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        as="form"
+        onSubmit={handleRegister}
+        p={8}
+        maxWidth="600px"
+        borderWidth={1}
+        borderRadius={8}
+        boxShadow="lg"
+        bg={useColorModeValue('white', 'gray.700')}
+      >
         <VStack spacing={4} align="flex-start" w="full">
           <Flex width="full" justify="center">
             <Image src="/logo.png" alt="TOR Logo" boxSize="100px" objectFit="contain" />
@@ -122,27 +148,58 @@ const Register = () => {
           </Heading>
           <FormControl id="username" isInvalid={errors.username} isRequired>
             <FormLabel>Username</FormLabel>
-            <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+            <AnimatedInput
+              ref={firstInputRef}
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              whileFocus={{ scale: 1.1, borderColor: '#3498db' }}
+            />
             {errors.username && <Text color="red.500" fontSize="sm">{errors.username}</Text>}
           </FormControl>
           <FormControl id="email" isInvalid={errors.email} isRequired>
             <FormLabel>Email Address</FormLabel>
-            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <AnimatedInput
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              whileFocus={{ scale: 1.1, borderColor: '#3498db' }}
+            />
             {errors.email && <Text color="red.500" fontSize="sm">{errors.email}</Text>}
           </FormControl>
           <FormControl id="password" isInvalid={errors.password} isRequired>
             <FormLabel>Password</FormLabel>
-            <Input type={showPassword ? 'text' : 'password'} value={password} onChange={handlePasswordChange} />
+            <InputGroup>
+              <AnimatedInput
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={handlePasswordChange}
+                whileFocus={{ scale: 1.1, borderColor: 'blue.500' }}
+              />
+              <InputRightElement>
+                <Button size="sm" onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <ViewOffIcon /> : <ViewIcon />}
+                </Button>
+              </InputRightElement>
+            </InputGroup>
             {errors.password && <Text color="red.500" fontSize="sm">{errors.password}</Text>}
           </FormControl>
-          <Button width="full" mt={4} colorScheme="blue" type="submit" isLoading={loading}>
+          <AnimatedButton
+            width="full"
+            mt={4}
+            colorScheme="blue"
+            type="submit"
+            isLoading={loading}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             {loading ? 'Registering...' : 'Register'}
-          </Button>
+          </AnimatedButton>
           <Link color="teal.500" href="/login" fontSize="sm">
             Already have an account? Login
           </Link>
         </VStack>
-      </Box>
+      </AnimatedBox>
     </Flex>
   );
 };

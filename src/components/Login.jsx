@@ -1,5 +1,10 @@
-import  { useState } from 'react';
+import  { useState, useRef, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
+import { motion } from 'framer-motion';
+
+const AnimatedBox = motion(Box);
+const AnimatedInput = motion(Input);
+const AnimatedButton = motion(Button);
 
 import {
   Box,
@@ -30,6 +35,14 @@ const Login = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const firstInputRef = useRef(null);
+
+  useEffect(() => {
+    // Focus the first input box when the component mounts
+    if (firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, []);
 
   const validate = () => {
     let valid = true;
@@ -112,7 +125,19 @@ const Login = () => {
 
   return (
     <Flex align="center" justify="center" minHeight="100vh" bg={useColorModeValue('gray.50', 'gray.800')}>
-      <Box as="form" onSubmit={handleLogin} p={8} maxWidth="600px" borderWidth={1} borderRadius={8} boxShadow="lg" bg={useColorModeValue('white', 'gray.700')}>
+      <AnimatedBox
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        as="form"
+        onSubmit={handleLogin}
+        p={8}
+        maxWidth="600px"
+        borderWidth={1}
+        borderRadius={8}
+        boxShadow="lg"
+        bg={useColorModeValue('white', 'gray.700')}
+      >
         <VStack spacing={4} align="flex-start" w="full">
           <Flex width="full" justify="center">
             <Image src="/logo.png" alt="TOR Logo" boxSize="100px" objectFit="contain" />
@@ -122,13 +147,24 @@ const Login = () => {
           </Heading>
           <FormControl id="username" isInvalid={errors.username} isRequired>
             <FormLabel>Username</FormLabel>
-            <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+            <AnimatedInput
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              whileFocus={{ scale: 1.1, borderColor: 'blue.500' }}
+              autoFocus
+            />
             {errors.username && <Text color="red.500" fontSize="sm">{errors.username}</Text>}
           </FormControl>
           <FormControl id="password" isInvalid={errors.password} isRequired>
             <FormLabel>Password</FormLabel>
             <InputGroup>
-              <Input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} />
+              <AnimatedInput
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                whileFocus={{ scale: 1.1, borderColor: 'blue.500' }}
+              />
               <InputRightElement>
                 <Button size="sm" onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <ViewOffIcon /> : <ViewIcon />}
@@ -137,9 +173,17 @@ const Login = () => {
             </InputGroup>
             {errors.password && <Text color="red.500" fontSize="sm">{errors.password}</Text>}
           </FormControl>
-          <Button width="full" mt={4} colorScheme="blue" type="submit" isLoading={loading}>
+          <AnimatedButton
+            width="full"
+            mt={4}
+            colorScheme="blue"
+            type="submit"
+            isLoading={loading}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             Login
-          </Button>
+          </AnimatedButton>
           <Flex justifyContent="space-between" width="full" mt={4}>
             <Link color="teal.500" href="/forgot-password" fontSize="sm">
               Forgot password?
@@ -149,7 +193,7 @@ const Login = () => {
             </Link>
           </Flex>
         </VStack>
-      </Box>
+      </AnimatedBox>
     </Flex>
   );
 };
